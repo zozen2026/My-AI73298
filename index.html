@@ -2,461 +2,298 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My AI - النظام المستقبلي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My AI - العقل العميق</title>
     <style>
+        :root {
+            --bg-color: #0f172a;
+            --chat-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --border-color: #334155;
+            --user-msg: #2563eb;
+            --ai-msg: #334155;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        :root {
-            --bg-color: #050914;
-            --header-bg: rgba(5, 9, 20, 0.85);
-            --accent-color: #00f2fe;
-            --accent-gradient: linear-gradient(135deg, #00f2fe, #6e5eff);
-            --text-color: #e2e8f0;
-            --border-color: rgba(0, 242, 254, 0.3);
-            --input-bg: rgba(255, 255, 255, 0.05);
-        }
+
         body {
             background-color: var(--bg-color);
-            height: 100vh;
+            color: var(--text-color);
             display: flex;
             flex-direction: column;
-            color: var(--text-color);
+            height: 100vh;
+            height: 100dvh; /* دعم الشاشات الكاملة للموبايل */
             overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: background 0.4s ease, color 0.4s ease;
         }
-        /* الهيدر */
+
+        /* الشريط العلوى المتجاوب */
         header {
-            padding: 15px 30px;
-            background: var(--header-bg);
+            background-color: var(--chat-bg);
             border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(10px);
-            transition: background 0.4s ease, border-color 0.4s ease;
+            width: 100%;
+            z-index: 10;
         }
-        .header-right {
+
+        .logo-area {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            color: var(--text-color);
+        }
+
+        /* إعدادات اختيار الألوان */
+        .theme-selector {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
         }
-        /* زر الأشرطة الثلاثة للقائمة الجانبية */
-        .menu-btn {
-            background: none;
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
+
+        .theme-selector label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .theme-selector select {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
             padding: 6px 10px;
             border-radius: 6px;
+            font-size: 0.85rem;
+            outline: none;
             cursor: pointer;
-            font-size: 16px;
-            transition: 0.2s;
         }
-        .menu-btn:hover {
-            background: var(--accent-color);
-            color: #000;
-        }
-        /* عنوان My AI مع الكتابة البيضاء المتوهجة */
-        .ai-title {
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 20px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px var(--accent-color);
-            letter-spacing: 1.5px;
-        }
-        /* زر اختيار الألوان */
-        .theme-selector {
-            position: relative;
-        }
-        .palette-btn {
-            background: var(--input-bg);
-            border: 1px solid var(--accent-color);
-            color: var(--text-color);
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-        .color-dropdown {
-            position: absolute;
-            top: 40px;
-            left: 0;
-            background: var(--header-bg);
-            border: 1px solid var(--accent-color);
-            border-radius: 8px;
-            padding: 10px;
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            z-index: 100;
-        }
-        .color-option {
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.2);
-            font-weight: bold;
-        }
-        /* القائمة الجانبية (الشريط الجانبي) */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            right: -300px;
-            width: 300px;
-            height: 100%;
-            background: var(--header-bg);
-            border-left: 1px solid var(--border-color);
-            backdrop-filter: blur(15px);
-            transition: right 0.3s ease;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-        .sidebar.open {
-            right: 0;
-        }
-        .sidebar h3 {
-            color: var(--text-color);
-            margin-bottom: 15px;
-            font-size: 16px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-        .chat-history-list {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .history-item {
-            background: var(--input-bg);
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: 0.2s;
-            word-break: break-all;
-            color: var(--text-color);
-        }
-        .history-item:hover {
-            border-color: var(--accent-color);
-            background: rgba(0, 242, 254, 0.1);
-        }
-        .sidebar-hint {
-            font-size: 11px;
-            color: var(--text-color);
-            opacity: 0.7;
-            margin-top: 10px;
-            line-height: 1.5;
-            text-align: center;
-            border-top: 1px solid var(--border-color);
-            padding-top: 10px;
-        }
-        .close-sidebar {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 18px;
-            cursor: pointer;
-            align-self: flex-end;
-            margin-bottom: 10px;
-        }
-        /* منطقة الدردشة */
+
+        /* صندوق المحادثة الرئيسي */
         .chat-container {
             flex: 1;
             overflow-y: auto;
-            padding: 20px 30px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            max-width: 950px;
+            gap: 12px;
+            scroll-behavior: smooth;
             width: 100%;
+            max-width: 800px;
             margin: 0 auto;
         }
+
         .message {
-            padding: 16px 20px;
-            border-radius: 8px;
-            max-width: 80%;
-            line-height: 1.7;
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+            font-size: 0.95rem;
             word-wrap: break-word;
-            font-size: 15px;
-            font-weight: 500;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .user-message {
-            background: var(--input-bg);
-            border: 1px solid var(--accent-color);
-            color: var(--text-color);
+            background-color: var(--user-msg);
+            color: #ffffff;
             align-self: flex-start;
+            border-bottom-right-radius: 2px;
         }
+
         .ai-message {
-            background: var(--input-bg);
-            border: 1px solid var(--accent-color);
+            background-color: var(--ai-msg);
             color: var(--text-color);
             align-self: flex-end;
+            border-bottom-left-radius: 2px;
         }
-        /* تم رفع شريط الإدخال للأعلى مسافة إضافية واضحة */
-        .input-wrapper {
-            padding: 10px 20px 100px 20px; 
-            background: transparent;
+
+        /* منطقة إدخال النص في الأسفل */
+        .input-container {
+            background-color: var(--chat-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 12px 16px;
             display: flex;
-            justify-content: center;
-        }
-        .input-box {
-            max-width: 950px;
+            gap: 10px;
             width: 100%;
-            display: flex;
-            gap: 15px;
-            background: var(--header-bg);
-            border: 2px solid var(--accent-color);
-            border-radius: 14px;
-            padding: 14px 20px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            max-width: 800px;
+            margin: 0 auto;
         }
-        textarea {
+
+        .input-container input {
             flex: 1;
-            background: transparent;
-            border: none;
+            background-color: var(--bg-color);
             color: var(--text-color);
-            resize: none;
-            height: 30px;
-            max-height: 150px;
-            font-family: inherit;
-            font-size: 16px;
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.95rem;
             outline: none;
         }
-        textarea::placeholder {
-            color: var(--text-color);
-            opacity: 0.6;
+
+        .input-container input:focus {
+            border-color: var(--accent-color);
         }
-        button.send-btn {
-            background: var(--accent-gradient);
+
+        .input-container button {
+            background-color: var(--accent-color);
+            color: #ffffff;
             border: none;
+            padding: 0 18px;
             border-radius: 8px;
-            color: white;
-            padding: 0 30px;
-            cursor: pointer;
             font-weight: bold;
-            font-family: inherit;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .input-container button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* توافق تام مع الهواتف الصغيرة جداً */
+        @media (max-width: 480px) {
+            header {
+                padding: 10px 12px;
+            }
+            .logo-area {
+                font-size: 1.05rem;
+            }
+            .theme-selector label {
+                display: none; /* إخفاء الكلمة وتوفير مساحة على الجوال */
+            }
+            .message {
+                max-width: 92%;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- الشريط العلوي الذي يحوي الاسم واختيار الألوان -->
     <header>
-        <div class="header-right">
-            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-            <div class="ai-title">My AI</div>
-        </div>
+        <div class="logo-area">My AI</div>
         <div class="theme-selector">
-            <button class="palette-btn" onclick="toggleDropdown()">🎨 الألوان والثيمات</button>
-            <div class="color-dropdown" id="colorDropdown">
-                <div class="color-option" style="background:#050914; color:#00f2fe;" onclick="setTheme('cyan')">أزرق سيان (الافتراضي)</div>
-                <div class="color-option" style="background:#f8fafc; color:#0f172a;" onclick="setTheme('white')">أبيض ناصع (فاتح)</div>
-                <div class="color-option" style="background:#022c22; color:#34d399;" onclick="setTheme('green')">أخضر سايبر</div>
-            </div>
+            <label for="themeSelect">اللون:</label>
+            <select id="themeSelect" onchange="changeTheme(this.value)">
+                <option value="blue">أزرق داكن (افتراضي)</option>
+                <option value="emerald">أخضر زمردي</option>
+                <option value="purple">بنفسجي ملكي</option>
+                <option value="dark">أسود فاحم</option>
+            </select>
         </div>
     </header>
 
-    <!-- الشريط الجانبي لتخزين الدردشات محلياً -->
-    <div class="sidebar" id="sidebar">
-        <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
-        <h3>سجل المحادثات (محلي)</h3>
-        <div class="chat-history-list" id="historyList">
-            <!-- ستضاف المحادثات هنا تلقائياً -->
-        </div>
-        <div class="sidebar-hint">
-            ⚠️ ملاحظة هامة: اضغط مطولاً على أي موضوع أو دردشة في الشريط أدناه ليتم مشاركتها وحفظها إلى Google Drive أو OneDrive.
-        </div>
+    <!-- مساحة عرض الرسائل -->
+    <div class="chat-container" id="chatContainer">
+        <div class="message ai-message">أهلاً بك. أنا جاهز، اطرح ما يدور في ذهنك لنخوض في صلب الموضوع مباشرة.</div>
     </div>
 
-    <div class="chat-container" id="chatBox">
-        <div class="message ai-message">أهلاً بك في My AI. كيف يمكنني مساعدتك اليوم؟</div>
+    <!-- شريط الإدخال السفلي -->
+    <div class="input-container">
+        <input type="text" id="userInput" placeholder="اكتب رسالتك هنا..." onkeydown="handleKeyPress(event)">
+        <button onclick="sendMessage()">إرسال</button>
     </div>
 
-    <!-- شريط الإدخال بعد الرفع الإضافي -->
-    <div class="input-wrapper">
-        <div class="input-box">
-            <textarea id="userInput" placeholder="اكتب استعلامك هنا..." rows="1"></textarea>
-            <button class="send-btn" id="sendBtn" onclick="sendMessage()">إرسال</button>
-        </div>
-    </div>
-
-<script>
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('open');
-        loadHistory();
-    }
-
-    function toggleDropdown() {
-        const drop = document.getElementById('colorDropdown');
-        drop.style.display = drop.style.display === 'flex' ? 'none' : 'flex';
-    }
-
-    function setTheme(theme) {
-        let bgColor, headerBg, accent, textCol, borderCol, inputBg, gradient;
-
-        if (theme === 'cyan') {
-            bgColor = '#050914';
-            headerBg = 'rgba(5, 9, 20, 0.85)';
-            accent = '#00f2fe';
-            textCol = '#e2e8f0';
-            borderCol = 'rgba(0, 242, 254, 0.3)';
-            inputBg = 'rgba(255, 255, 255, 0.05)';
-            gradient = 'linear-gradient(135deg, #00f2fe, #6e5eff)';
-        } else if (theme === 'white') {
-            bgColor = '#f4f6f9';
-            headerBg = 'rgba(255, 255, 255, 0.9)';
-            accent = '#2563eb';
-            textCol = '#1e293b';
-            borderCol = 'rgba(37, 99, 235, 0.2)';
-            inputBg = 'rgba(0, 0, 0, 0.03)';
-            gradient = 'linear-gradient(135deg, #2563eb, #7c3aed)';
-        } else if (theme === 'green') {
-            bgColor = '#021510';
-            headerBg = 'rgba(2, 21, 16, 0.9)';
-            accent = '#10b981';
-            textCol = '#ecfdf5';
-            borderCol = 'rgba(16, 185, 129, 0.3)';
-            inputBg = 'rgba(255, 255, 255, 0.05)';
-            gradient = 'linear-gradient(135deg, #10b981, #047857)';
+    <script>
+        // دالة لتغيير الألوان عبر الـ CSS Variables
+        function changeTheme(theme) {
+            const root = document.documentElement;
+            if (theme === 'blue') {
+                root.style.setProperty('--bg-color', '#0f172a');
+                root.style.setProperty('--chat-bg', '#1e293b');
+                root.style.setProperty('--accent-color', '#3b82f6');
+                root.style.setProperty('--accent-hover', '#2563eb');
+                root.style.setProperty('--border-color', '#334155');
+                root.style.setProperty('--user-msg', '#2563eb');
+                root.style.setProperty('--ai-msg', '#334155');
+            } else if (theme === 'emerald') {
+                root.style.setProperty('--bg-color', '#064e3b');
+                root.style.setProperty('--chat-bg', '#022c22');
+                root.style.setProperty('--accent-color', '#10b981');
+                root.style.setProperty('--accent-hover', '#059669');
+                root.style.setProperty('--border-color', '#047857');
+                root.style.setProperty('--user-msg', '#059669');
+                root.style.setProperty('--ai-msg', '#065f46');
+            } else if (theme === 'purple') {
+                root.style.setProperty('--bg-color', '#2e1065');
+                root.style.setProperty('--chat-bg', '#1e1b4b');
+                root.style.setProperty('--accent-color', '#8b5cf6');
+                root.style.setProperty('--accent-hover', '#7c3aed');
+                root.style.setProperty('--border-color', '#4c1d95');
+                root.style.setProperty('--user-msg', '#7c3aed');
+                root.style.setProperty('--ai-msg', '#312e81');
+            } else if (theme === 'dark') {
+                root.style.setProperty('--bg-color', '#000000');
+                root.style.setProperty('--chat-bg', '#121212');
+                root.style.setProperty('--accent-color', '#525252');
+                root.style.setProperty('--accent-hover', '#737373');
+                root.style.setProperty('--border-color', '#262626');
+                root.style.setProperty('--user-msg', '#404040');
+                root.style.setProperty('--ai-msg', '#212121');
+            }
+            // حفظ اختيار المستخدم في الذاكرة المحلية للمتصفح
+            localStorage.setItem('selected_theme', theme);
         }
 
-        const root = document.documentElement;
-        root.style.setProperty('--bg-color', bgColor);
-        root.style.setProperty('--header-bg', headerBg);
-        root.style.setProperty('--accent-color', accent);
-        root.style.setProperty('--text-color', textCol);
-        root.style.setProperty('--border-color', borderCol);
-        root.style.setProperty('--input-bg', inputBg);
-        root.style.setProperty('--accent-gradient', gradient);
+        // استرجاع الثيم المحفوظ عند فتح الصفحة
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('selected_theme');
+            if (savedTheme) {
+                document.getElementById('themeSelect').value = savedTheme;
+                changeTheme(savedTheme);
+            }
+        };
 
-        toggleDropdown();
-    }
-
-    function saveToLocalHistory(text) {
-        let history = JSON.parse(localStorage.getItem('myAiHistory') || '[]');
-        history.unshift(text);
-        if (history.length > 20) history.pop();
-        localStorage.setItem('myAiHistory', JSON.stringify(history));
-    }
-
-    function loadHistory() {
-        const list = document.getElementById('historyList');
-        let history = JSON.parse(localStorage.getItem('myAiHistory') || '[]');
-        list.innerHTML = '';
-        if (history.length === 0) {
-            list.innerHTML = '<div style="opacity:0.5; font-size:13px; text-align:center;">لا توجد محادثات محفوظة بعد</div>';
-            return;
-        }
-        history.forEach((item) => {
-            const div = document.createElement('div');
-            div.className = 'history-item';
-            div.innerText = item;
-            
-            let pressTimer;
-            div.addEventListener('mousedown', () => {
-                pressTimer = setTimeout(() => shareToCloud(item), 800);
-            });
-            div.addEventListener('mouseup', () => clearTimeout(pressTimer));
-            div.addEventListener('touchstart', () => {
-                pressTimer = setTimeout(() => shareToCloud(item), 800);
-            });
-            div.addEventListener('touchend', () => clearTimeout(pressTimer));
-
-            list.appendChild(div);
-        });
-    }
-
-    function shareToCloud(text) {
-        if (navigator.share) {
-            navigator.share({
-                title: 'محادثة My AI',
-                text: text,
-            }).catch(() => {});
-        } else {
-            const choice = confirm(`هل تريد مشاركة هذه المحادثة وحفظها؟\n\n"${text}"\n\nاضغط موافق لنسخها ومشاركة الرابط إلى Google Drive أو OneDrive.`);
-            if (choice) {
-                navigator.clipboard.writeText(text);
-                alert('تم نسخ المحادثة بنجاح! يمكنك الآن لصقها في Google Drive أو OneDrive.');
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
             }
         }
-    }
 
-    async function sendMessage() {
-        const input = document.getElementById('userInput');
-        const sendBtn = document.getElementById('sendBtn');
-        
-        const message = input.value.trim();
-        if (!message) return;
-        
-        appendMessage(message, 'user-message');
-        saveToLocalHistory(message);
-        input.value = '';
-        sendBtn.disabled = true;
-        
-        const loadingId = 'loading-' + Date.now();
-        appendMessage('جاري معالجة البيانات...', 'ai-message', loadingId);
-        
-        try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message })
-            });
-            
-            const data = await response.json();
-            document.getElementById(loadingId).remove();
-            
-            if (response.ok) {
-                appendMessage(data.reply, 'ai-message');
-            } else {
-                appendMessage('خطأ في النظام: ' + (data.error || 'غير معروف'), 'ai-message');
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const container = document.getElementById('chatContainer');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            // إضافة رسالة المستخدم
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user-message';
+            userDiv.textContent = text;
+            container.appendChild(userDiv);
+
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            try {
+                // استدعاء ملف الـ API الخلفي (تأكد أن مسار الـ API صحيح حسب مشروعك)
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+
+                const data = await response.json();
+                
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'message ai-message';
+                aiDiv.textContent = data.reply || data.error || 'حدث خطأ في الاستجابة.';
+                container.appendChild(aiDiv);
+            } catch (error) {
+                const errDiv = document.createElement('div');
+                errDiv.className = 'message ai-message';
+                errDiv.textContent = 'تعذر الاتصال بالعقل.';
+                container.appendChild(errDiv);
             }
-        } catch (error) {
-            document.getElementById(loadingId).remove();
-            appendMessage('عذراً، واجهنا ضغطاً مفاجئاً في الاتصال. يرجى الانتظار قليلاً.', 'ai-message');
-        } finally {
-            sendBtn.disabled = false;
+
+            container.scrollTop = container.scrollHeight;
         }
-    }
-
-    function appendMessage(text, className, id = '') {
-        const chatBox = document.getElementById('chatBox');
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${className}`;
-        if (id) msgDiv.id = id;
-        msgDiv.innerText = text;
-        chatBox.appendChild(msgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    document.getElementById('userInput').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-    
-    document.getElementById('userInput').addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-    });
-</script>
-
+    </script>
 </body>
 </html>
