@@ -3,45 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>النظام الذكي المستقبلي - نسخة واضحة</title>
+    <title>My AI - النظام المستقبلي</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+        :root {
+            --bg-color: #050914;
+            --header-bg: rgba(5, 9, 20, 0.85);
+            --accent-color: #00f2fe;
+            --accent-gradient: linear-gradient(135deg, #00f2fe, #6e5eff);
+            --text-color: #e2e8f0;
+        }
         body {
-            /* خلفية مظلمة صلبة ومستقرة لضمان تباين عالٍ */
-            background-color: #050914;
+            background-color: var(--bg-color);
             background-image: 
                 radial-gradient(circle at 20% 10%, rgba(0, 242, 254, 0.05) 0%, transparent 30%),
                 radial-gradient(circle at 80% 90%, rgba(79, 70, 229, 0.05) 0%, transparent 30%);
             height: 100vh;
             display: flex;
             flex-direction: column;
-            color: #e2e8f0; /* لون فاتح ثابت للنصوص العامة */
+            color: var(--text-color);
             overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* خط قياسي وواضح للقراءة */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.3s ease;
         }
-        /* الهيدر المستقبلي */
+        /* الهيدر */
         header {
             padding: 15px 30px;
-            background: rgba(5, 9, 20, 0.85);
+            background: var(--header-bg);
             border-bottom: 1px solid rgba(0, 242, 254, 0.3);
             display: flex;
             justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(10px);
-            letter-spacing: 1px;
-            font-size: 13px;
-            text-transform: uppercase;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 0 0 5px rgba(0, 242, 254, 0.8);
         }
-        header span {
-            color: #00f2fe;
-            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        /* زر الأشرطة الثلاثة للقائمة الجانبية */
+        .menu-btn {
+            background: none;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+        .menu-btn:hover {
+            background: var(--accent-color);
+            color: #000;
+        }
+        /* عنوان My AI مع الكتابة البيضاء المتوهجة */
+        .ai-title {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 20px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px var(--accent-color);
+            letter-spacing: 1.5px;
+        }
+        /* زر اختيار الألوان */
+        .theme-selector {
+            position: relative;
+        }
+        .palette-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--accent-color);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .color-dropdown {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            background: rgba(5, 9, 20, 0.95);
+            border: 1px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 10px;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+        .color-option {
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        /* القائمة الجانبية (الشريط الجانبي) */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background: rgba(5, 9, 20, 0.98);
+            border-left: 1px solid rgba(0, 242, 254, 0.3);
+            backdrop-filter: blur(15px);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .sidebar.open {
+            right: 0;
+        }
+        .sidebar h3 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+        .chat-history-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: 0.2s;
+            word-break: break-all;
+        }
+        .history-item:hover {
+            border-color: var(--accent-color);
+            background: rgba(0, 242, 254, 0.1);
+        }
+        .sidebar-hint {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 10px;
+            line-height: 1.5;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
+        }
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            align-self: flex-end;
+            margin-bottom: 10px;
         }
         /* منطقة الدردشة */
         .chat-container {
@@ -61,34 +186,26 @@
             max-width: 80%;
             line-height: 1.7;
             word-wrap: break-word;
-            font-size: 16px; /* حجم خط أكبر قليلاً للوضوح */
-            font-weight: 500; /* خط أثقل قليلاً للقراءة المريحة */
-            animation: fadeIn 0.3s ease-out;
-            position: relative;
+            font-size: 16px;
+            font-weight: 500;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
         .user-message {
-            /* تباين أعلى لخلفية المستخدم */
             background: rgba(0, 242, 254, 0.15);
-            border: 1px solid rgba(0, 242, 254, 0.5);
-            color: #ffffff; /* نص أبيض ناصع للمستخدم */
+            border: 1px solid var(--accent-color);
+            color: #ffffff;
             align-self: flex-start;
         }
         .ai-message {
-            /* تباين أعلى لخلفية الذكاء الاصطناعي */
             background: rgba(110, 94, 255, 0.15);
-            border: 1px solid rgba(110, 94, 255, 0.5);
-            color: #f1f5f9; /* نص فاتح جداً لـ AI */
+            border: 1px solid #6e5eff;
+            color: #f1f5f9;
             align-self: flex-end;
         }
-        /* شريط الإدخال السفلي */
+        /* شريط الإدخال */
         .input-wrapper {
             padding: 20px 30px;
-            background: rgba(5, 9, 20, 0.95);
+            background: var(--header-bg);
             border-top: 1px solid rgba(0, 242, 254, 0.3);
             backdrop-filter: blur(15px);
             display: flex;
@@ -100,34 +217,27 @@
             display: flex;
             gap: 20px;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(0, 242, 254, 0.4);
+            border: 1px solid var(--accent-color);
             border-radius: 10px;
             padding: 12px 20px;
-            transition: all 0.3s;
-        }
-        .input-box:focus-within {
-            border-color: #00f2fe;
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
         }
         textarea {
             flex: 1;
             background: transparent;
             border: none;
-            color: #ffffff; /* نص أبيض داخل حقل الإدخال */
+            color: #ffffff;
             resize: none;
             height: 30px;
             max-height: 150px;
             font-family: inherit;
-            font-size: 17px; /* خط أكبر داخل الحقل */
+            font-size: 17px;
             outline: none;
-            padding-top: 4px;
-            line-height: 1.5;
         }
         textarea::placeholder {
-            color: rgba(255, 255, 255, 0.6); /* مكان النص أوضح بتباين أكثر */
+            color: rgba(255, 255, 255, 0.6);
         }
-        button {
-            background: linear-gradient(135deg, #00f2fe, #6e5eff);
+        button.send-btn {
+            background: var(--accent-gradient);
             border: none;
             border-radius: 8px;
             color: white;
@@ -138,97 +248,190 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             font-size: 14px;
-            transition: opacity 0.2s, box-shadow 0.2s;
-        }
-        button:hover {
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.7);
-            opacity: 1;
-        }
-        button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div>نظام التشغيل المتطور // <span>متصل بالخادم الآمن</span></div>
-        <div>[ CORE v2.5 ]</div>
+        <div class="header-right">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <div class="ai-title">My AI</div>
+        </div>
+        <div class="theme-selector">
+            <button class="palette-btn" onclick="toggleDropdown()">🎨 الألوان</button>
+            <div class="color-dropdown" id="colorDropdown">
+                <div class="color-option" style="background:#00f2fe; color:#000;" onclick="setTheme('cyan')">أزرق سيان (الافتراضي)</div>
+                <div class="color-option" style="background:#ffffff; color:#000;" onclick="setTheme('white')">أبيض ناصع</div>
+                <div class="color-option" style="background:#10b981; color:#fff;" onclick="setTheme('green')">أخضر سايبر</div>
+            </div>
+        </div>
     </header>
 
+    <!-- الشريط الجانبي لتخزين الدردشات محلياً -->
+    <div class="sidebar" id="sidebar">
+        <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
+        <h3>سجل المحادثات (محلي)</h3>
+        <div class="chat-history-list" id="historyList">
+            <!-- ستضاف المحادثات هنا تلقائياً -->
+        </div>
+        <div class="sidebar-hint">
+            ⚠️ ملاحظة هامة: اضغط مطولاً على أي موضوع أو دردشة في الشريط أدناه ليتم مشاركتها وحفظها إلى Google Drive أو OneDrive.
+        </div>
+    </div>
+
     <div class="chat-container" id="chatBox">
-        <div class="message ai-message">النظام في وضع الاستعداد. كيف يمكنني بدء العمليات؟</div>
+        <div class="message ai-message">أهلاً بك في My AI. كيف يمكنني مساعدتك اليوم؟</div>
     </div>
 
     <div class="input-wrapper">
         <div class="input-box">
-            <textarea id="userInput" placeholder="اكتب الاستعلام هنا..." rows="1"></textarea>
-            <button id="sendBtn" onclick="sendMessage()">إرسال</button>
+            <textarea id="userInput" placeholder="اكتب استعلامك هنا..." rows="1"></textarea>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()">إرسال</button>
         </div>
     </div>
 
 <script>
-async function sendMessage() {
-    const input = document.getElementById('userInput');
-    const chatBox = document.getElementById('chatBox');
-    const sendBtn = document.getElementById('sendBtn');
-    
-    const message = input.value.trim();
-    if (!message) return;
-    
-    appendMessage(message, 'user-message');
-    input.value = '';
-    sendBtn.disabled = true;
-    
-    const loadingId = 'loading-' + Date.now();
-    appendMessage('جاري معالجة البيانات...', 'ai-message', loadingId);
-    
-    try {
-        const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: message })
-        });
-        
-        const data = await response.json();
-        document.getElementById(loadingId).remove();
-        
-        if (response.ok) {
-            appendMessage(data.reply, 'ai-message');
-        } else {
-            appendMessage('خطأ في النظام: ' + (data.error || 'غير معروف'), 'ai-message');
+    // فتح وإغلاق القائمة الجانبية
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        loadHistory();
+    }
+
+    // القائمة المنسدلة للألوان
+    function toggleDropdown() {
+        const drop = document.getElementById('colorDropdown');
+        drop.style.display = drop.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    // تغيير الثيمات والألوان
+    function setTheme(theme) {
+        let accent = '#00f2fe';
+        let gradient = 'linear-gradient(135deg, #00f2fe, #6e5eff)';
+        if (theme === 'white') {
+            accent = '#ffffff';
+            gradient = 'linear-gradient(135deg, #ffffff, #a1a1aa)';
+        } else if (theme === 'green') {
+            accent = '#10b981';
+            gradient = 'linear-gradient(135deg, #10b981, #047857)';
         }
-    } catch (error) {
-        document.getElementById(loadingId).remove();
-        appendMessage('خطأ حرج في الاتصال بالخادم السحابي.', 'ai-message');
-    } finally {
-        sendBtn.disabled = false;
+        document.documentElement.style.setProperty('--accent-color', accent);
+        document.documentElement.style.setProperty('--accent-gradient', gradient);
+        toggleDropdown();
     }
-}
 
-function appendMessage(text, className, id = '') {
-    const chatBox = document.getElementById('chatBox');
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `message ${className}`;
-    if (id) msgDiv.id = id;
-    msgDiv.innerText = text;
-    chatBox.appendChild(msgDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-// إرسال عند الضغط على Enter
-document.getElementById('userInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
+    // حفظ واسترجاع الدردشة محلياً
+    function saveToLocalHistory(text) {
+        let history = JSON.parse(localStorage.getItem('myAiHistory') || '[]');
+        history.unshift(text);
+        if (history.length > 20) history.pop(); // الاحتفاظ بأحدث 20 محادثة
+        localStorage.setItem('myAiHistory', JSON.stringify(history));
     }
-});
-// تحسين حجم textarea تلقائياً
-document.getElementById('userInput').addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = (this.scrollHeight) + 'px';
-});
+
+    function loadHistory() {
+        const list = document.getElementById('historyList');
+        let history = JSON.parse(localStorage.getItem('myAiHistory') || '[]');
+        list.innerHTML = '';
+        if (history.length === 0) {
+            list.innerHTML = '<div style="color:rgba(255,255,255,0.4); font-size:13px; text-align:center;">لا توجد محادثات محفوظة بعد</div>';
+            return;
+        }
+        history.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.innerText = item;
+            
+            // ميزة الضغط المطول لمشاركة المحادثة إلى Google Drive أو OneDrive
+            let pressTimer;
+            div.addEventListener('mousedown', () => {
+                pressTimer = setTimeout(() => shareToCloud(item), 800); // ضغطة مطولة لمدة 0.8 ثانية
+            });
+            div.addEventListener('mouseup', () => clearTimeout(pressTimer));
+            div.addEventListener('touchstart', () => {
+                pressTimer = setTimeout(() => shareToCloud(item), 800);
+            });
+            div.addEventListener('touchend', () => clearTimeout(pressTimer));
+
+            list.appendChild(div);
+        });
+    }
+
+    function shareToCloud(text) {
+        if (navigator.share) {
+            navigator.share({
+                title: 'محادثة My AI',
+                text: text,
+            }).catch(() => {});
+        } else {
+            // كبديل إذا لم تتوفر ميزة المشاركة المباشرة
+            const choice = confirm(`هل تريد مشاركة هذه المحادثة وحفظها؟\n\n"${text}"\n\nاضغط موافق لنسخها ومشاركة الرابط إلى Google Drive أو OneDrive.`);
+            if (choice) {
+                navigator.clipboard.writeText(text);
+                alert('تم نسخ المحادثة بنجاح! يمكنك الآن لصقها في Google Drive أو OneDrive.');
+            }
+        }
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const chatBox = document.getElementById('chatBox');
+        const sendBtn = document.getElementById('sendBtn');
+        
+        const message = input.value.trim();
+        if (!message) return;
+        
+        appendMessage(message, 'user-message');
+        saveToLocalHistory(message);
+        input.value = '';
+        sendBtn.disabled = true;
+        
+        const loadingId = 'loading-' + Date.now();
+        appendMessage('جاري معالجة البيانات...', 'ai-message', loadingId);
+        
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            });
+            
+            const data = await response.json();
+            document.getElementById(loadingId).remove();
+            
+            if (response.ok) {
+                appendMessage(data.reply, 'ai-message');
+            } else {
+                appendMessage('خطأ في النظام: ' + (data.error || 'غير معروف'), 'ai-message');
+            }
+        } catch (error) {
+            document.getElementById(loadingId).remove();
+            appendMessage('عذراً، واجهنا ضغطاً مفاجئاً في الاتصال. يرجى الانتظار قليلاً.', 'ai-message');
+        } finally {
+            sendBtn.disabled = false;
+        }
+    }
+
+    function appendMessage(text, className, id = '') {
+        const chatBox = document.getElementById('chatBox');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${className}`;
+        if (id) msgDiv.id = id;
+        msgDiv.innerText = text;
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    document.getElementById('userInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    
+    document.getElementById('userInput').addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
 </script>
 
 </body>
