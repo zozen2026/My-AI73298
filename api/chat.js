@@ -1,7 +1,3 @@
-// =====================================================================
-// عقل My AI الشامل - موسوعة الكون والسياسة والتاريخ (نسخة التدريب المحلية الكبرى جداً)
-// =====================================================================
-
 export default function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -17,10 +13,11 @@ export default function handler(req, res) {
     }
 
     try {
-        const { message } = req.body;
+        const body = req.body || {};
+        const message = body.message || '';
 
-        if (!message) {
-            return res.status(400).json({ error: 'الرسالة فارغة' });
+        if (!message || typeof message !== 'string') {
+            return res.status(200).json({ reply: "الرسالة فارغة أو غير صالحة." });
         }
 
         const text = message.toLowerCase().trim();
@@ -37,14 +34,18 @@ export default function handler(req, res) {
             'react', 'node', 'json', 'xml', 'bug', 'debug', 'لغة برمجة'
         ];
 
-        for (let word of forbiddenWords) {
-            if (text.includes(word)) {
-                return res.status(200).json({ 
-                    reply: "أنا عقل معرفي وفلسفي وسياسي شامل، ولكني لا أفقه شيئاً في البرمجة أو الأكواد أو بناء التطبيقات. هذا العالم مطرود كلياً من قاموسي." 
-                });
+        let isForbidden = false;
+        for (let i = 0; i < forbiddenWords.length; i++) {
+            if (text.includes(forbiddenWords[i])) {
+                isForbidden = true;
+                break;
             }
         }
 
+        if (isForbidden) {
+            reply = "أنا عقل معرفي وفلسفي وسياسي شامل، ولكني لا أفقه شيئاً في البرمجة أو الأكواد أو بناء التطبيقات. هذا العالم مطرود كلياً من قاموسي.";
+        }
+        
         // =====================================================================
         // 1. آراء البلدان والقوى العظمى العالمية
         // =====================================================================
@@ -184,7 +185,9 @@ export default function handler(req, res) {
         }
 
         return res.status(200).json({ reply: reply });
+        
     } catch (error) {
-        return res.status(500).json({ error: 'حدث خطأ داخلي في معالجة العقل' });
+        // حماية قصوى تمنع تعطل السيرفر وتعيد رسالة واضحة في حال حدوث أي خطأ طارئ
+        return res.status(200).json({ reply: "حدث استثناء في معالجة المعطيات، لكن النظام مستمر وجاهز لمتابعة النقاش." });
     }
 }
