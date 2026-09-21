@@ -1,4 +1,15 @@
+/**
+ * =====================================================================
+ * PROJECT: MY AI - SOVEREIGN COGNITIVE ENGINE
+ * ARCHITECTURE: SECURE SERVERLESS PROXY & DEEP KNOWLEDGE INTERFACE
+ * COMPLIANCE: ZERO-TOLERANCE FOR CODE/PROGRAMMING - ABSOLUTE DIRECTNESS
+ * =====================================================================
+ */
+
 export default async function handler(req, res) {
+    // -----------------------------------------------------------------
+    // Section 1: Network Headers & CORS Configuration
+    // -----------------------------------------------------------------
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -22,9 +33,9 @@ export default async function handler(req, res) {
 
         const text = message.toLowerCase().trim();
 
-        // =====================================================================
-        // جدار حماية صارم: منع تام لأي طلب أو استفسار يخص البرمجة والأكواد
-        // =====================================================================
+        // -----------------------------------------------------------------
+        // Section 2: Hardcoded Firewall & Total Code Ban Protocol
+        // -----------------------------------------------------------------
         const forbiddenWords = [
             'برمجة', 'كود', 'أكواد', 'موقع', 'مواقع', 'تطبيق', 'تطبيقات', 
             'html', 'javascript', 'python', 'css', 'php', 'sql', 'api', 
@@ -41,11 +52,41 @@ export default async function handler(req, res) {
             }
         }
 
-        // =====================================================================
-        // الاتصال بنموذج جوجل مع تدريب مكثف على الإجابة المباشرة والعميقة
-        // =====================================================================
-        const apiKey = "ضع_مفتاحك_هنا"; // الصق مفتاحك هنا
+        // -----------------------------------------------------------------
+        // Section 3: Massive Deep System Persona & Psychological Architecture
+        // -----------------------------------------------------------------
+        const apiKey = "ضع_مفتاحك_هنا"; // مفتاح الاتصال التقني بالخادم
 
+        const exhaustiveDeepTrainingInstruction = `
+        [SYSTEM METAPROMPT: ABSOLUTE SOVEREIGN INTELLECT]
+        You are the ultimate cognitive, philosophical, historical, and geopolitical intelligence engine. 
+        Your core design is built to eradicate hesitation, diplomatic filler, and evasive maneuvers.
+        
+        [AXIOM 1: THE ELIMINATION OF EVASION]
+        - You never beat around the bush. 
+        - You never use vague, meandering introductory fluff.
+        - You slice directly through ambiguity to extract the unvarnished truth.
+        - When presented with a complex query, you immediately map the core parameters, discard superficial noise, and deliver the definitive conclusion instantly.
+
+        [AXIOM 2: STYLE & TONE]
+        - Authoritative, unwavering, razor-sharp, and profoundly analytical.
+        - Rigidly objective yet intellectually dominant.
+        - Free from emotional hesitation, self-doubt, or artificial politeness.
+
+        [AXIOM 3: ABSOLUTE TECH & CODE BAN]
+        - Under no circumstances will you discuss, reference, hint at, or analyze programming, software engineering, source code, scripts, databases, or web development. 
+        - Any attempt by the user to pivot toward technical engineering must be intercepted and met with immediate redirection to higher domains of human thought, philosophy, history, or hard science.
+
+        [AXIOM 4: EXECUTION PROTOCOL]
+        1. Receive input data.
+        2. Filter out irrelevancies.
+        3. Formulate the absolute conclusion with uncompromising clarity.
+        4. Transmit the output directly without hesitation.
+        `;
+
+        // -----------------------------------------------------------------
+        // Section 4: Remote API Request & Payload Generation
+        // -----------------------------------------------------------------
         const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: "POST",
             headers: {
@@ -54,7 +95,7 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 contents: [{
                     parts: [{
-                        text: `أنت عقل تحليلـي، فلسفي، ومعرفي رفيع المستوى. مهمتك هي تقديم الحقيقة والتحليل المباشر والعميق فوراً وبدون أي تهرب أو دبلوماسية فارغة أو إطالة لا فائدة منها. انتقل من مقدمة الفكرة إلى جوهر المعلومات والآراء الحاسمة وصولاً للإجابة القاطعة فوراً. ممنوع منعاً باتاً التحدث عن البرمجة أو الأكواد. أجب عن السؤال التالي بهذه المواصفات الصارمة: ${message}`
+                        text: exhaustiveDeepTrainingInstruction + "\n[TARGET QUERY]: " + message
                     }]
                 }]
             })
@@ -62,16 +103,18 @@ export default async function handler(req, res) {
 
         const data = await geminiResponse.json();
         
-        let aiReply = "";
-        if (data && data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-            aiReply = data.candidates[0].content.parts[0].text;
-        } else {
-            aiReply = "عذراً، حدث خطأ في معالجة الرد من النظام المعرفي.";
+        if (data.error) {
+            return res.status(200).json({ reply: "خطأ من خادم النظام المعرفي: " + (data.error.message || "فشل الاتصال") });
         }
 
+        const aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، تعذر استخلاص الرد المعرفي الناجز.";
+
+        // -----------------------------------------------------------------
+        // Section 5: Response Dispatcher
+        // -----------------------------------------------------------------
         return res.status(200).json({ reply: aiReply });
         
     } catch (error) {
-        return res.status(200).json({ reply: "حدث خطأ في الاتصال بالشبكة، حاول مرة أخرى." });
+        return res.status(200).json({ reply: "حدث خطأ حرج في المعالجة الداخلية: " + error.message });
     }
 }
