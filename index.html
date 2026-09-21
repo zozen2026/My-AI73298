@@ -205,25 +205,24 @@
             color: var(--text-color);
             align-self: flex-end;
         }
-        /* شريط الإدخال */
+        /* شريط الإدخال المرفوع قليلاً للأعلى */
         .input-wrapper {
-            padding: 20px 30px;
-            background: var(--header-bg);
-            border-top: 1px solid var(--border-color);
-            backdrop-filter: blur(15px);
+            padding: 15px 30px 25px 30px;
+            background: transparent;
             display: flex;
             justify-content: center;
-            transition: background 0.4s ease, border-color 0.4s ease;
         }
         .input-box {
             max-width: 950px;
             width: 100%;
             display: flex;
             gap: 20px;
-            background: var(--input-bg);
+            background: var(--header-bg);
             border: 1px solid var(--accent-color);
-            border-radius: 10px;
-            padding: 12px 20px;
+            border-radius: 14px;
+            padding: 14px 22px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
         textarea {
             flex: 1;
@@ -289,6 +288,7 @@
         <div class="message ai-message">أهلاً بك في My AI. كيف يمكنني مساعدتك اليوم؟</div>
     </div>
 
+    <!-- شريط الإدخال المرفوع قليلاً للأعلى -->
     <div class="input-wrapper">
         <div class="input-box">
             <textarea id="userInput" placeholder="اكتب استعلامك هنا..." rows="1"></textarea>
@@ -297,19 +297,16 @@
     </div>
 
 <script>
-    // فتح وإغلاق القائمة الجانبية
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('open');
         loadHistory();
     }
 
-    // القائمة المنسدلة للألوان
     function toggleDropdown() {
         const drop = document.getElementById('colorDropdown');
         drop.style.display = drop.style.display === 'flex' ? 'none' : 'flex';
     }
 
-    // تغيير الثيمات (الخلفية واللون العام بالكامل)
     function setTheme(theme) {
         let bgColor, headerBg, accent, textCol, borderCol, inputBg, gradient;
 
@@ -351,7 +348,6 @@
         toggleDropdown();
     }
 
-    // حفظ واسترجاع الدردشة محلياً
     function saveToLocalHistory(text) {
         let history = JSON.parse(localStorage.getItem('myAiHistory') || '[]');
         history.unshift(text);
