@@ -3,73 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مساعد الذكاء الاصطناعي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Tajawal', sans-serif;
+    <title>مساعد الذكاء الاصطناعي المحلي (داخل المتصفح)</title>
+    <!-- استدعاء مكتبة WebLLM عبر CDN -->
+    <script type="module">
+        import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+
+        let engine = null;
+        const modelName = "Llama-3-8B-Instruct-q4f32_1-MLC"; // نموذج ذكي وخفيف
+
+        async function initAI() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerText = "جاري تحميل النموذج إلى المتصفح (قد يستغرق ذلك دقيقة حسب سرعة النت)...";
+            
+            try {
+                // إنشاء محرك الذكاء الاصطناعي محلياً باستخدام كرت الشاشة لجهازك
+                engine = await CreateMLCEngine(modelName, {
+                    initProgressCallback: (report) => {
+                        statusDiv.innerText = report.text;
+                    }
+                });
+                statusDiv.innerText = "الذكاء الاصطناعي جاهز للعمل محلياً!";
+                document.getElementById('userInput').disabled = false;
+                document.querySelector('button').disabled = false;
+            } catch (err) {
+                statusDiv.innerText = "عذراً، متصفحك أو جهازك قد لا يدعم ميزة WebGPU المطلوبة لتشغيل النموذج.";
+                console.error(err);
+            }
         }
 
+        window.onload = initAI;
+
+        window.sendMessage = async function() {
+            const inputField = document.getElementById('userInput');
+            const messagesContainer = document.getElementById('chatMessages');
+            const text = inputField.value.trim();
+
+            if (!text || !engine) return;
+
+            // إضافة رسالة المستخدم
+            messagesContainer.innerHTML += `<div class="message user">${text}</div>`;
+            inputField.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // إضافة مكان لرد الـ AI
+            const aiMsgId = 'ai-msg-' + Date.now();
+            messagesContainer.innerHTML += `<div class="message ai" id="${aiMsgId}">جاري التفكير...</div>`;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            try {
+                const chunks = await engine.chat.completions.create({
+                    messages: [{ role: "user", content: text }],
+                    stream: true, // رد تدريجي مثل ChatGPT
+                });
+
+                let reply = "";
+                const aiMsgElement = document.getElementById(aiMsgId);
+                
+                for await (const chunk of chunks) {
+                    const delta = chunk.choices[0]?.delta?.content || "";
+                    reply += delta;
+                    aiMsgElement.innerText = reply;
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            } catch (error) {
+                document.getElementById(aiMsgId).innerText = "حدث خطأ أثناء توليد الرد.";
+            }
+        };
+
+        window.handleKeyPress = function(event) {
+            if (event.key === 'Enter') {
+                window.sendMessage();
+            }
+        };
+    </script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-color: #f8fafc;
+            --accent-color: #38bdf8;
+        }
         body {
-            background-color: #0b0f19;
-            color: #f3f4f6;
-            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
-            position: relative;
+            height: 100vh;
         }
-
-        .bg-ai-watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 25vw;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.02);
-            z-index: 0;
-            user-select: none;
-            letter-spacing: -10px;
-            pointer-events: none;
-        }
-
         .chat-container {
             width: 100%;
             max-width: 650px;
             height: 85vh;
-            background: rgba(17, 24, 39, 0.7);
+            background: var(--card-bg);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            z-index: 1;
-            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
-
         .chat-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border-color);
             text-align: center;
-            background: rgba(31, 41, 55, 0.4);
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
         }
-
-        .chat-header h1 {
-            font-size: 1.25rem;
-            color: #60a5fa;
-            font-weight: 700;
-            letter-spacing: 1px;
+        .chat-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--accent-color);
         }
-
+        #status {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
         .chat-messages {
             flex: 1;
             padding: 20px;
@@ -78,136 +132,77 @@
             flex-direction: column;
             gap: 15px;
         }
-
         .message {
             max-width: 80%;
             padding: 12px 16px;
-            border-radius: 14px;
-            font-size: 0.95rem;
+            border-radius: 12px;
             line-height: 1.5;
-            word-wrap: break-word;
+            font-size: 0.95rem;
+            word-break: break-word;
         }
-
         .message.user {
-            background: #2563eb;
-            color: #ffffff;
+            background: rgba(56, 189, 248, 0.2);
             align-self: flex-start;
-            border-bottom-right-radius: 4px;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            border: 1px solid rgba(56, 189, 248, 0.3);
         }
-
-        .message.bot {
-            background: #1f2937;
-            color: #e5e7eb;
+        .message.ai {
+            background: rgba(255, 255, 255, 0.07);
             align-self: flex-end;
-            border-bottom-left-radius: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
         }
-
         .chat-input-area {
-            padding: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(31, 41, 55, 0.4);
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
             display: flex;
             gap: 10px;
+            background: rgba(255, 255, 255, 0.02);
         }
-
+        input, button {
+            font-family: inherit;
+        }
         .chat-input-area input {
             flex: 1;
-            background: rgba(11, 15, 25, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 12px 16px;
-            border-radius: 12px;
-            color: #ffffff;
-            font-size: 0.95rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
             outline: none;
-            transition: all 0.3s ease;
         }
-
         .chat-input-area input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+            border-color: var(--accent-color);
         }
-
         .chat-input-area button {
-            background: #3b82f6;
-            color: #ffffff;
-            border: none;
             padding: 0 20px;
-            border-radius: 12px;
-            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent-color);
+            color: #0f1725;
+            font-weight: bold;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: opacity 0.2s;
         }
-
-        .chat-input-area button:hover {
-            background: #2563eb;
+        .chat-input-area button:disabled, .chat-input-area input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-ai-watermark">AI</div>
-
     <div class="chat-container">
         <div class="chat-header">
-            <h1>Autonomous AI Assistant</h1>
+            <h3>مساعد الذكاء الاصطناعي المحلي (Glassmorphism)</h3>
+            <div id="status">جاري التهيئة...</div>
         </div>
-
         <div class="chat-messages" id="chatMessages">
-            <div class="message bot">مرحباً بك! أنا نظام الذكاء الاصطناعي الخاص بك، كيف يمكنني مساعدتك اليوم؟</div>
+            <div class="message ai">مرحباً! أنا نموذج ذكاء اصطناعي يعمل بالكامل داخل متصفحك وبدون أي سيرفرات خارجية. انتظر قليلاً ريثما يكتمل التحميل في الأعلى لبدء المحادثة.</div>
         </div>
-
         <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="اكتب رسالتك هنا..." autocomplete="off">
-            <button onclick="sendMessage()">إرسال</button>
+            <input type="text" id="userInput" placeholder="اكتب رسالتك هنا بعد انتهاء التحميل..." onkeypress="handleKeyPress(event)" disabled>
+            <button onclick="sendMessage()" disabled>إرسال</button>
         </div>
     </div>
 
-    <script>
-        const messagesContainer = document.getElementById('chatMessages');
-        const userInput = document.getElementById('userInput');
-
-        userInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        function sendMessage() {
-            const text = userInput.value.trim();
-            if (!text) return;
-
-            appendMessage(text, 'user');
-            userInput.value = '';
-
-            fetch('/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message: text })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const reply = data.reply || data.response || "تم استلام الرد بنجاح.";
-                appendMessage(reply, 'bot');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                appendMessage("عذراً، حدث خطأ في الاتصال بالسيرفر المحلي.", 'bot');
-            });
-        }
-
-        function appendMessage(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', sender);
-            messageDiv.textContent = text;
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-    </script>
 </body>
 </html>
