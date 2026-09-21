@@ -16,29 +16,29 @@
             --accent-color: #00f2fe;
             --accent-gradient: linear-gradient(135deg, #00f2fe, #6e5eff);
             --text-color: #e2e8f0;
+            --border-color: rgba(0, 242, 254, 0.3);
+            --input-bg: rgba(255, 255, 255, 0.05);
         }
         body {
             background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(circle at 20% 10%, rgba(0, 242, 254, 0.05) 0%, transparent 30%),
-                radial-gradient(circle at 80% 90%, rgba(79, 70, 229, 0.05) 0%, transparent 30%);
             height: 100vh;
             display: flex;
             flex-direction: column;
             color: var(--text-color);
             overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: background 0.3s ease;
+            transition: background 0.4s ease, color 0.4s ease;
         }
         /* الهيدر */
         header {
             padding: 15px 30px;
             background: var(--header-bg);
-            border-bottom: 1px solid rgba(0, 242, 254, 0.3);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(10px);
+            transition: background 0.4s ease, border-color 0.4s ease;
         }
         .header-right {
             display: flex;
@@ -73,9 +73,9 @@
             position: relative;
         }
         .palette-btn {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--input-bg);
             border: 1px solid var(--accent-color);
-            color: #fff;
+            color: var(--text-color);
             padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
@@ -85,23 +85,24 @@
             position: absolute;
             top: 40px;
             left: 0;
-            background: rgba(5, 9, 20, 0.95);
+            background: var(--header-bg);
             border: 1px solid var(--accent-color);
             border-radius: 8px;
             padding: 10px;
             display: none;
             flex-direction: column;
             gap: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             z-index: 100;
         }
         .color-option {
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 12px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.2);
+            font-weight: bold;
         }
         /* القائمة الجانبية (الشريط الجانبي) */
         .sidebar {
@@ -110,8 +111,8 @@
             right: -300px;
             width: 300px;
             height: 100%;
-            background: rgba(5, 9, 20, 0.98);
-            border-left: 1px solid rgba(0, 242, 254, 0.3);
+            background: var(--header-bg);
+            border-left: 1px solid var(--border-color);
             backdrop-filter: blur(15px);
             transition: right 0.3s ease;
             z-index: 1000;
@@ -123,10 +124,10 @@
             right: 0;
         }
         .sidebar h3 {
-            color: #fff;
+            color: var(--text-color);
             margin-bottom: 15px;
             font-size: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
         }
         .chat-history-list {
@@ -137,7 +138,7 @@
             gap: 10px;
         }
         .history-item {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--input-bg);
             padding: 10px;
             border-radius: 6px;
             font-size: 14px;
@@ -145,6 +146,7 @@
             border: 1px solid transparent;
             transition: 0.2s;
             word-break: break-all;
+            color: var(--text-color);
         }
         .history-item:hover {
             border-color: var(--accent-color);
@@ -152,17 +154,18 @@
         }
         .sidebar-hint {
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-color);
+            opacity: 0.7;
             margin-top: 10px;
             line-height: 1.5;
             text-align: center;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid var(--border-color);
             padding-top: 10px;
         }
         .close-sidebar {
             background: none;
             border: none;
-            color: #fff;
+            color: var(--text-color);
             font-size: 18px;
             cursor: pointer;
             align-self: flex-end;
@@ -188,35 +191,36 @@
             word-wrap: break-word;
             font-size: 16px;
             font-weight: 500;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .user-message {
-            background: rgba(0, 242, 254, 0.15);
+            background: var(--input-bg);
             border: 1px solid var(--accent-color);
-            color: #ffffff;
+            color: var(--text-color);
             align-self: flex-start;
         }
         .ai-message {
-            background: rgba(110, 94, 255, 0.15);
-            border: 1px solid #6e5eff;
-            color: #f1f5f9;
+            background: var(--input-bg);
+            border: 1px solid var(--accent-color);
+            color: var(--text-color);
             align-self: flex-end;
         }
         /* شريط الإدخال */
         .input-wrapper {
             padding: 20px 30px;
             background: var(--header-bg);
-            border-top: 1px solid rgba(0, 242, 254, 0.3);
+            border-top: 1px solid var(--border-color);
             backdrop-filter: blur(15px);
             display: flex;
             justify-content: center;
+            transition: background 0.4s ease, border-color 0.4s ease;
         }
         .input-box {
             max-width: 950px;
             width: 100%;
             display: flex;
             gap: 20px;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--input-bg);
             border: 1px solid var(--accent-color);
             border-radius: 10px;
             padding: 12px 20px;
@@ -225,7 +229,7 @@
             flex: 1;
             background: transparent;
             border: none;
-            color: #ffffff;
+            color: var(--text-color);
             resize: none;
             height: 30px;
             max-height: 150px;
@@ -234,7 +238,8 @@
             outline: none;
         }
         textarea::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-color);
+            opacity: 0.5;
         }
         button.send-btn {
             background: var(--accent-gradient);
@@ -259,11 +264,11 @@
             <div class="ai-title">My AI</div>
         </div>
         <div class="theme-selector">
-            <button class="palette-btn" onclick="toggleDropdown()">🎨 الألوان</button>
+            <button class="palette-btn" onclick="toggleDropdown()">🎨 الألوان والثيمات</button>
             <div class="color-dropdown" id="colorDropdown">
-                <div class="color-option" style="background:#00f2fe; color:#000;" onclick="setTheme('cyan')">أزرق سيان (الافتراضي)</div>
-                <div class="color-option" style="background:#ffffff; color:#000;" onclick="setTheme('white')">أبيض ناصع</div>
-                <div class="color-option" style="background:#10b981; color:#fff;" onclick="setTheme('green')">أخضر سايبر</div>
+                <div class="color-option" style="background:#050914; color:#00f2fe;" onclick="setTheme('cyan')">أزرق سيان (الافتراضي)</div>
+                <div class="color-option" style="background:#f8fafc; color:#0f172a;" onclick="setTheme('white')">أبيض ناصع (فاتح)</div>
+                <div class="color-option" style="background:#022c22; color:#34d399;" onclick="setTheme('green')">أخضر سايبر</div>
             </div>
         </div>
     </header>
@@ -304,19 +309,45 @@
         drop.style.display = drop.style.display === 'flex' ? 'none' : 'flex';
     }
 
-    // تغيير الثيمات والألوان
+    // تغيير الثيمات (الخلفية واللون العام بالكامل)
     function setTheme(theme) {
-        let accent = '#00f2fe';
-        let gradient = 'linear-gradient(135deg, #00f2fe, #6e5eff)';
-        if (theme === 'white') {
-            accent = '#ffffff';
-            gradient = 'linear-gradient(135deg, #ffffff, #a1a1aa)';
+        let bgColor, headerBg, accent, textCol, borderCol, inputBg, gradient;
+
+        if (theme === 'cyan') {
+            bgColor = '#050914';
+            headerBg = 'rgba(5, 9, 20, 0.85)';
+            accent = '#00f2fe';
+            textCol = '#e2e8f0';
+            borderCol = 'rgba(0, 242, 254, 0.3)';
+            inputBg = 'rgba(255, 255, 255, 0.05)';
+            gradient = 'linear-gradient(135deg, #00f2fe, #6e5eff)';
+        } else if (theme === 'white') {
+            bgColor = '#f4f6f9';
+            headerBg = 'rgba(255, 255, 255, 0.9)';
+            accent = '#2563eb';
+            textCol = '#1e293b';
+            borderCol = 'rgba(37, 99, 235, 0.2)';
+            inputBg = 'rgba(0, 0, 0, 0.03)';
+            gradient = 'linear-gradient(135deg, #2563eb, #7c3aed)';
         } else if (theme === 'green') {
+            bgColor = '#021510';
+            headerBg = 'rgba(2, 21, 16, 0.9)';
             accent = '#10b981';
+            textCol = '#ecfdf5';
+            borderCol = 'rgba(16, 185, 129, 0.3)';
+            inputBg = 'rgba(255, 255, 255, 0.05)';
             gradient = 'linear-gradient(135deg, #10b981, #047857)';
         }
-        document.documentElement.style.setProperty('--accent-color', accent);
-        document.documentElement.style.setProperty('--accent-gradient', gradient);
+
+        const root = document.documentElement;
+        root.style.setProperty('--bg-color', bgColor);
+        root.style.setProperty('--header-bg', headerBg);
+        root.style.setProperty('--accent-color', accent);
+        root.style.setProperty('--text-color', textCol);
+        root.style.setProperty('--border-color', borderCol);
+        root.style.setProperty('--input-bg', inputBg);
+        root.style.setProperty('--accent-gradient', gradient);
+
         toggleDropdown();
     }
 
@@ -324,7 +355,7 @@
     function saveToLocalHistory(text) {
         let history = JSON.parse(localStorage.getItem('myAiHistory') || '[]');
         history.unshift(text);
-        if (history.length > 20) history.pop(); // الاحتفاظ بأحدث 20 محادثة
+        if (history.length > 20) history.pop();
         localStorage.setItem('myAiHistory', JSON.stringify(history));
     }
 
@@ -333,18 +364,17 @@
         let history = JSON.parse(localStorage.getItem('myAiHistory') || '[]');
         list.innerHTML = '';
         if (history.length === 0) {
-            list.innerHTML = '<div style="color:rgba(255,255,255,0.4); font-size:13px; text-align:center;">لا توجد محادثات محفوظة بعد</div>';
+            list.innerHTML = '<div style="opacity:0.5; font-size:13px; text-align:center;">لا توجد محادثات محفوظة بعد</div>';
             return;
         }
-        history.forEach((item, index) => {
+        history.forEach((item) => {
             const div = document.createElement('div');
             div.className = 'history-item';
             div.innerText = item;
             
-            // ميزة الضغط المطول لمشاركة المحادثة إلى Google Drive أو OneDrive
             let pressTimer;
             div.addEventListener('mousedown', () => {
-                pressTimer = setTimeout(() => shareToCloud(item), 800); // ضغطة مطولة لمدة 0.8 ثانية
+                pressTimer = setTimeout(() => shareToCloud(item), 800);
             });
             div.addEventListener('mouseup', () => clearTimeout(pressTimer));
             div.addEventListener('touchstart', () => {
@@ -363,7 +393,6 @@
                 text: text,
             }).catch(() => {});
         } else {
-            // كبديل إذا لم تتوفر ميزة المشاركة المباشرة
             const choice = confirm(`هل تريد مشاركة هذه المحادثة وحفظها؟\n\n"${text}"\n\nاضغط موافق لنسخها ومشاركة الرابط إلى Google Drive أو OneDrive.`);
             if (choice) {
                 navigator.clipboard.writeText(text);
@@ -374,7 +403,6 @@
 
     async function sendMessage() {
         const input = document.getElementById('userInput');
-        const chatBox = document.getElementById('chatBox');
         const sendBtn = document.getElementById('sendBtn');
         
         const message = input.value.trim();
