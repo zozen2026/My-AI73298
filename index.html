@@ -205,9 +205,9 @@
             color: var(--text-color);
             align-self: flex-end;
         }
-        /* شريط الإدخال المرفوع بشكل ملحوظ للأعلى (المكان المطلوب) */
+        /* تم رفع شريط الإدخال للأعلى بمسافة إضافية واضحة (حوالي 3 سم) */
         .input-wrapper {
-            padding: 10px 20px 45px 20px; /* زيادة المساحة السفلية ليرتفع الشريط فوق إطار الموبايل والسفلية */
+            padding: 10px 20px 75px 20px; 
             background: transparent;
             display: flex;
             justify-content: center;
@@ -218,7 +218,7 @@
             display: flex;
             gap: 15px;
             background: var(--header-bg);
-            border: 2px solid var(--accent-color); /* زيادة وضوح الإطار */
+            border: 2px solid var(--accent-color);
             border-radius: 14px;
             padding: 14px 20px;
             backdrop-filter: blur(15px);
@@ -288,7 +288,7 @@
         <div class="message ai-message">أهلاً بك في My AI. كيف يمكنني مساعدتك اليوم؟</div>
     </div>
 
-    <!-- شريط الإدخال المرفوع للأعلى بوضوح -->
+    <!-- شريط الإدخال بعد التعديل والرفع للأعلى -->
     <div class="input-wrapper">
         <div class="input-box">
             <textarea id="userInput" placeholder="اكتب استعلامك هنا..." rows="1"></textarea>
