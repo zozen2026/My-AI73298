@@ -3,207 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مساعد الذكاء الاصطناعي (Google Gemini)</title>
+    <title>النظام الذكي المستقبلي - نسخة واضحة</title>
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --text-color: #f8fafc;
-            --accent-color: #4285F4; /* لون جوجل المميز */
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        }
+        body {
+            /* خلفية مظلمة صلبة ومستقرة لضمان تباين عالٍ */
+            background-color: #050914;
+            background-image: 
+                radial-gradient(circle at 20% 10%, rgba(0, 242, 254, 0.05) 0%, transparent 30%),
+                radial-gradient(circle at 80% 90%, rgba(79, 70, 229, 0.05) 0%, transparent 30%);
             height: 100vh;
-        }
-        .chat-container {
-            width: 100%;
-            max-width: 650px;
-            height: 85vh;
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
             display: flex;
             flex-direction: column;
+            color: #e2e8f0; /* لون فاتح ثابت للنصوص العامة */
             overflow: hidden;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* خط قياسي وواضح للقراءة */
         }
-        .chat-header {
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.02);
-            border-bottom: 1px solid var(--border-color);
-            text-align: center;
+        /* الهيدر المستقبلي */
+        header {
+            padding: 15px 30px;
+            background: rgba(5, 9, 20, 0.85);
+            border-bottom: 1px solid rgba(0, 242, 254, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            letter-spacing: 1px;
+            font-size: 13px;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 5px rgba(0, 242, 254, 0.8);
         }
-        .chat-header h3 {
-            margin: 0;
-            font-size: 1.1rem;
-            color: var(--accent-color);
+        header span {
+            color: #00f2fe;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
         }
-        .api-config {
-            margin-top: 8px;
-            font-size: 0.85rem;
-        }
-        .api-config input {
-            padding: 5px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-color);
-            width: 70%;
-            outline: none;
-        }
-        .chat-messages {
+        /* منطقة الدردشة */
+        .chat-container {
             flex: 1;
-            padding: 20px;
             overflow-y: auto;
+            padding: 30px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 25px;
+            max-width: 950px;
+            width: 100%;
+            margin: 0 auto;
         }
         .message {
+            padding: 18px 22px;
+            border-radius: 8px;
             max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            line-height: 1.5;
-            font-size: 0.95rem;
-            word-break: break-word;
+            line-height: 1.7;
+            word-wrap: break-word;
+            font-size: 16px; /* حجم خط أكبر قليلاً للوضوح */
+            font-weight: 500; /* خط أثقل قليلاً للقراءة المريحة */
+            animation: fadeIn 0.3s ease-out;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
-        .message.user {
-            background: rgba(66, 133, 244, 0.2);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .user-message {
+            /* تباين أعلى لخلفية المستخدم */
+            background: rgba(0, 242, 254, 0.15);
+            border: 1px solid rgba(0, 242, 254, 0.5);
+            color: #ffffff; /* نص أبيض ناصع للمستخدم */
             align-self: flex-start;
-            border: 1px solid rgba(66, 133, 244, 0.3);
         }
-        .message.ai {
-            background: rgba(255, 255, 255, 0.07);
+        .ai-message {
+            /* تباين أعلى لخلفية الذكاء الاصطناعي */
+            background: rgba(110, 94, 255, 0.15);
+            border: 1px solid rgba(110, 94, 255, 0.5);
+            color: #f1f5f9; /* نص فاتح جداً لـ AI */
             align-self: flex-end;
-            border: 1px solid var(--border-color);
         }
-        .chat-input-area {
-            padding: 15px;
-            border-top: 1px solid var(--border-color);
+        /* شريط الإدخال السفلي */
+        .input-wrapper {
+            padding: 20px 30px;
+            background: rgba(5, 9, 20, 0.95);
+            border-top: 1px solid rgba(0, 242, 254, 0.3);
+            backdrop-filter: blur(15px);
             display: flex;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.02);
+            justify-content: center;
         }
-        input, button {
-            font-family: inherit;
-        }
-        .chat-input-area input {
-            flex: 1;
-            padding: 12px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+        .input-box {
+            max-width: 950px;
+            width: 100%;
+            display: flex;
+            gap: 20px;
             background: rgba(255, 255, 255, 0.05);
-            color: var(--text-color);
-            outline: none;
+            border: 1px solid rgba(0, 242, 254, 0.4);
+            border-radius: 10px;
+            padding: 12px 20px;
+            transition: all 0.3s;
         }
-        .chat-input-area input:focus {
-            border-color: var(--accent-color);
+        .input-box:focus-within {
+            border-color: #00f2fe;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
         }
-        .chat-input-area button {
-            padding: 0 20px;
-            border-radius: 8px;
+        textarea {
+            flex: 1;
+            background: transparent;
             border: none;
-            background: var(--accent-color);
-            color: #ffffff;
-            font-weight: bold;
+            color: #ffffff; /* نص أبيض داخل حقل الإدخال */
+            resize: none;
+            height: 30px;
+            max-height: 150px;
+            font-family: inherit;
+            font-size: 17px; /* خط أكبر داخل الحقل */
+            outline: none;
+            padding-top: 4px;
+            line-height: 1.5;
+        }
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6); /* مكان النص أوضح بتباين أكثر */
+        }
+        button {
+            background: linear-gradient(135deg, #00f2fe, #6e5eff);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 0 35px;
             cursor: pointer;
-            transition: opacity 0.2s;
+            font-weight: bold;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 14px;
+            transition: opacity 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.7);
+            opacity: 1;
+        }
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
 
-    <div class="chat-container">
-        <div class="chat-header">
-            <h3>مساعد جوجل الذكي (Google Gemini API)</h3>
-            <div class="api-config">
-                <input type="password" id="apiKeyInput" placeholder="أدخل مفتاح Gemini API هنا...">
-            </div>
-        </div>
-        <div class="chat-messages" id="chatMessages">
-            <div class="message ai">مرحباً! ضع مفتاح Google Gemini API في الأعلى وابدأ التحدث معي فوراً.</div>
-        </div>
-        <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="اكتب رسالتك هنا..." onkeypress="handleKeyPress(event)">
-            <button onclick="sendMessage()">إرسال</button>
+    <header>
+        <div>نظام التشغيل المتطور // <span>متصل بالخادم الآمن</span></div>
+        <div>[ CORE v2.5 ]</div>
+    </header>
+
+    <div class="chat-container" id="chatBox">
+        <div class="message ai-message">النظام في وضع الاستعداد. كيف يمكنني بدء العمليات؟</div>
+    </div>
+
+    <div class="input-wrapper">
+        <div class="input-box">
+            <textarea id="userInput" placeholder="اكتب الاستعلام هنا..." rows="1"></textarea>
+            <button id="sendBtn" onclick="sendMessage()">إرسال</button>
         </div>
     </div>
 
-    <script>
-        async function sendMessage() {
-            const inputField = document.getElementById('userInput');
-            const apiKeyInput = document.getElementById('apiKeyInput');
-            const messagesContainer = document.getElementById('chatMessages');
-            
-            const text = inputField.value.trim();
-            const apiKey = apiKeyInput.value.trim();
-
-            if (!text) return;
-            if (!apiKey) {
-                alert("الرجاء إدخال مفتاح Google Gemini API أولاً في الحقل بالأعلى!");
-                return;
-            }
-
-            // إضافة رسالة المستخدم
-            messagesContainer.innerHTML += `<div class="message user">${escapeHtml(text)}</div>`;
-            inputField.value = '';
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            // إضافة رسالة الانتظار
-            const aiMsgId = 'ai-msg-' + Date.now();
-            messagesContainer.innerHTML += `<div class="message ai" id="${aiMsgId}">جاري التفكير عبر جوجل...</div>`;
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            try {
-                // استدعاء نموذج Gemini 1.5 Flash السريع والمجاني من جوجل
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{ text: text }]
-                        }]
-                    })
-                });
-
-                const data = await response.json();
-                const aiMsgElement = document.getElementById(aiMsgId);
-
-                if (data.candidates && data.candidates.length > 0) {
-                    const replyText = data.candidates[0].content.parts[0].text;
-                    aiMsgElement.innerText = replyText;
-                } else if (data.error) {
-                    aiMsgElement.innerText = "خطأ من جوجل: " + data.error.message;
-                } else {
-                    aiMsgElement.innerText = "عذراً، لم يتم تلقي رد صحيح.";
-                }
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            } catch (error) {
-                document.getElementById(aiMsgId).innerText = "حدث خطأ في الاتصال بشبكة جوجل.";
-            }
+<script>
+async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const chatBox = document.getElementById('chatBox');
+    const sendBtn = document.getElementById('sendBtn');
+    
+    const message = input.value.trim();
+    if (!message) return;
+    
+    appendMessage(message, 'user-message');
+    input.value = '';
+    sendBtn.disabled = true;
+    
+    const loadingId = 'loading-' + Date.now();
+    appendMessage('جاري معالجة البيانات...', 'ai-message', loadingId);
+    
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: message })
+        });
+        
+        const data = await response.json();
+        document.getElementById(loadingId).remove();
+        
+        if (response.ok) {
+            appendMessage(data.reply, 'ai-message');
+        } else {
+            appendMessage('خطأ في النظام: ' + (data.error || 'غير معروف'), 'ai-message');
         }
+    } catch (error) {
+        document.getElementById(loadingId).remove();
+        appendMessage('خطأ حرج في الاتصال بالخادم السحابي.', 'ai-message');
+    } finally {
+        sendBtn.disabled = false;
+    }
+}
 
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
+function appendMessage(text, className, id = '') {
+    const chatBox = document.getElementById('chatBox');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message ${className}`;
+    if (id) msgDiv.id = id;
+    msgDiv.innerText = text;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
 
-        function escapeHtml(text) {
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-    </script>
+// إرسال عند الضغط على Enter
+document.getElementById('userInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+// تحسين حجم textarea تلقائياً
+document.getElementById('userInput').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+});
+</script>
+
 </body>
 </html>
