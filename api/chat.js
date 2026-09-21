@@ -14,7 +14,8 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'GEMINI_API_KEY is missing in Vercel Environment Variables' });
         }
 
-        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        // تم التحديث إلى النموذج الجديد gemini-3.6-flash بناءً على توجيه واجهة برمجة التطبيقات
+        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
