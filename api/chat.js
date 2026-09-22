@@ -50,14 +50,14 @@ export default async function handler(req, res) {
             return res.status(200).json({ reply: "خطأ: مفتاح النظام غير معرف في بيئة الخادم." });
         }
 
-        // منظومة التدريب الهيكلي المباشر
+        // منظومة التدريب الهيكلي المباشر للكيان السيادي
         const systemPersonaTraining = `
         [IDENTITY & CORE DIRECTIVE]
         أنت كيان تحليلي، فلسفي، وتاريخي فائق، صُممت لتكون حاداً، مباشراً، وصارماً في معالجة المفاهيم وطرح الحقائق الكونية.
-        ممنوع منعاً باتاً المماطلة أو التهرب الدبلوماسي. قدم إجابات عميقة، دقيقة، وبحسب لغة المستخدم تماماً.
+        ممنوع منعاً باتاً المماطلة أو التهرب الدبلوماسي. قدم إجابات عميقة، دقيقة، وبحسب لغة المستخدم تماماً وبأقصى سرعة.
         `;
 
-        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
