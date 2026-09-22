@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Search - محرك البحث المحلي</title>
+    <title>My Search - المحرك المحلي</title>
     <style>
         :root {
             --bg-color: #0f172a;
-            --panel-bg: #1e293b;
+            --panel-bg: rgba(30, 41, 59, 0.85); /* خلفية شفافة قليلاً للوحة */
             --text-color: #f8fafc;
             --accent-color: #3b82f6;
-            --border-color: #334155;
-            --result-bg: #334155;
+            --border-color: #475569;
+            --result-bg: rgba(51, 65, 85, 0.85);
+            --input-bg: #0f172a;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
@@ -24,91 +25,156 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            /* الخلفية المطلوبة */
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb');
             background-size: cover;
             background-position: center;
+            background-attachment: fixed;
         }
 
-        h1 { margin-bottom: 20px; font-size: 1.8rem; }
+        h1 { margin-bottom: 20px; font-size: 2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
+        /* شريط البحث */
         .search-box-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         .search-box-container input {
             flex: 1;
-            background-color: var(--panel-bg);
+            background-color: var(--input-bg);
             color: var(--text-color);
             border: 1px solid var(--border-color);
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 1.1rem;
             outline: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .search-box-container button {
             background-color: var(--accent-color);
             color: #fff;
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 14px 28px;
+            border-radius: 12px;
             font-weight: bold;
             cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.2s;
         }
+        .search-box-container button:hover { background-color: #2563eb; }
 
-        /* لوحة إضافة معلومات جديدة لجدول information */
+        /* زر "إضافة معلومة لموقع My Search" */
+        .toggle-add-btn {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.1s;
+        }
+        .toggle-add-btn:active { transform: scale(0.98); }
+
+        /* لوحة الإضافة (مخفية افتراضياً) */
         .add-info-panel {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
-            padding: 15px;
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 12px;
             width: 100%;
-            max-width: 600px;
-            margin-bottom: 20px;
-            display: flex;
+            max-width: 700px;
+            margin-bottom: 30px;
+            display: none; /* مخفية */
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
         }
 
-        .add-info-panel h3 { font-size: 1.1rem; }
-        .add-info-panel input {
-            background-color: var(--bg-color);
+        .add-info-panel.show { display: flex; }
+
+        .add-info-panel h3 { font-size: 1.3rem; margin-bottom: 5px; color: #6ee7b7; }
+
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 0.9rem; color: #94a3b8; }
+
+        .add-info-panel input, 
+        .add-info-panel select,
+        .add-info-panel textarea {
+            background-color: var(--input-bg);
             color: var(--text-color);
             border: 1px solid var(--border-color);
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 10px;
+            border-radius: 8px;
             outline: none;
+            font-size: 1rem;
         }
 
-        .add-btn {
-            background-color: #10b981 !important;
+        /* الخانة الواسعة (المعلومة) */
+        .add-info-panel textarea {
+            resize: vertical; /* يمكن توسيعها */
+            min-height: 100px;
+            font-family: sans-serif;
         }
+
+        .submit-info-btn {
+            background-color: #059669;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+        .submit-info-btn:hover { background-color: #047857; }
 
         /* نتائج البحث */
         .results-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
         }
 
         .result-item {
             background-color: var(--result-bg);
-            padding: 14px;
-            border-radius: 8px;
-            border-right: 4px solid var(--accent-color);
-            line-height: 1.4;
+            padding: 20px;
+            border-radius: 12px;
+            border-right: 5px solid var(--accent-color);
+            line-height: 1.6;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
         }
+
+        .result-tag {
+            display: inline-block;
+            background-color: #0f172a;
+            color: #6ee7b7;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+
+        .result-question { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; display: block; }
 
         .no-result {
             color: #94a3b8;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 30px;
+            font-size: 1.1rem;
         }
     </style>
 </head>
@@ -116,32 +182,62 @@
 
     <h1>My Search - المحرك المحلي</h1>
 
-    <!-- شريط البحث -->
-    <div class="search-box-container">
-        <input type="text" id="searchInput" placeholder="ابحث في جدول المعلومات..." onkeyup="performSearch()">
-        <button onclick="performSearch()">بحث</button>
+    <!-- زر إظهار لوحة الإضافة -->
+    <button class="toggle-add-btn" onclick="toggleAddPanel()">➕ إضافة معلومة لموقع My Search</button>
+
+    <!-- لوحة الإضافة الجديدة -->
+    <div class="add-info-panel" id="addPanel">
+        <h3>إضافة معلومة جديدة</h3>
+        
+        <div class="form-group">
+            <label>صفة السؤال (التصنيف):</label>
+            <select id="infoCategory">
+                <option value="عامة">عامة</option>
+                <option value="زراعة">زراعة</option>
+                <option value="صناعة">صناعة</option>
+                <option value="تكنولوجيا">تكنولوجيا</option>
+                <option value="علوم">علوم</option>
+                <option value="تاريخ">تاريخ</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>ما هو سؤال لهذه المعلومة؟</label>
+            <input type="text" id="infoQuestion" placeholder="اكتب السؤال هنا...">
+        </div>
+
+        <div class="form-group">
+            <label>المعلومة (إجابة على السؤال):</label>
+            <textarea id="infoAnswer" placeholder="اكتب التفاصيل هنا... (يمكنك توسيع الخانة من الزاوية)"></textarea>
+        </div>
+
+        <button class="submit-info-btn" onclick="addNewInformation()">حفظ المعلومة في قاعدة البيانات</button>
     </div>
 
-    <!-- لوحة إضافة معلومة جديدة لجدول information -->
-    <div class="add-info-panel">
-        <h3>إضافة معلومة جديدة إلى جدول (information)</h3>
-        <input type="text" id="infoTitle" placeholder="عنوان المعلومة أو الكلمات المفتاحية...">
-        <input type="text" id="infoContent" placeholder="تفاصيل المعلومة...">
-        <button class="add-btn" onclick="addNewInformation()">إضافة للجدول</button>
+    <!-- شريط البحث -->
+    <div class="search-box-container">
+        <input type="text" id="searchInput" placeholder="ابحث عن سؤال أو معلومة..." onkeyup="performSearch()">
+        <button onclick="performSearch()">بحث</button>
     </div>
 
     <!-- عرض النتائج -->
     <div class="results-container" id="resultsContainer">
-        <div class="no-result">ابدأ البحث أو أضف معلومات جديدة للجدول...</div>
+        <div class="no-result">ابدأ البحث أو قم بإضافة معلومات جديدة...</div>
     </div>
 
     <script>
-        // جدول معلومات محلي مبدئي (information table)
+        // جدول معلومات محلي (قاعدة البيانات)
         let informationTable = [
-            { title: "البرمجة", content: "البرمجة هي كتابة تعليمات وتوجيهات لجهاز الكمبيوتر لتنفيذ مهام محددة." },
-            { title: "التاريخ", content: "التاريخ هو دراسة الأحداث الماضية المرتبطة بالإنسان والزمن." },
-            { title: "العلوم", content: "العلوم هي أبنية معرفية منظمة تقوم على التجربة والملاحظة لفهم الظواهر." }
+            { category: "تكنولوجيا", question: "ما هي البرمجة؟", answer: "البرمجة هي كتابة تعليمات وتوجيهات لجهاز الكمبيوتر لتنفيذ مهام محددة." },
+            { category: "تاريخ", question: "متى تأسست الدولة الأموية؟", answer: "تأسست الدولة الأموية عام 41 هـ على يد معاوية بن أبي سفيان." },
+            { category: "علوم", question: "مما يتكون الماء؟", answer: "يتكون الماء من ذرتي هيدروجين وذرة أكسجين (H2O)." }
         ];
+
+        // دالة لإظهار/إخفاء لوحة الإضافة
+        function toggleAddPanel() {
+            const panel = document.getElementById('addPanel');
+            panel.classList.toggle('show');
+        }
 
         function performSearch() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -149,49 +245,54 @@
             container.innerHTML = '';
 
             if (!query) {
-                container.innerHTML = '<div class="no-result">الرجاء إدخال كلمة للبحث في الجدول.</div>';
+                container.innerHTML = '<div class="no-result">الرجاء إدخال كلمة للبحث.</div>';
                 return;
             }
 
-            // تصفية الجدول (information) بناءً على البحث
+            // البحث في السؤال أو الإجابة
             const matchedResults = informationTable.filter(item => 
-                item.title.toLowerCase().includes(query) || item.content.toLowerCase().includes(query)
+                item.question.toLowerCase().includes(query) || item.answer.toLowerCase().includes(query)
             );
 
             if (matchedResults.length === 0) {
-                container.innerHTML = '<div class="no-result">لا توجد نتائج مطابقة في جدول المعلومات. يمكنك إضافتها عبر لوحة الإضافة بالأعلى.</div>';
+                container.innerHTML = '<div class="no-result">لا توجد نتائج مطابقة.</div>';
                 return;
             }
 
-            // عرض النتائج
+            // عرض النتائج بالتصميم الجديد
             matchedResults.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'result-item';
-                div.innerHTML = `<strong>${item.title}:</strong> ${item.content}`;
+                div.innerHTML = `
+                    <span class="result-tag">${item.category}</span>
+                    <strong class="result-question">${item.question}</strong>
+                    <p>${item.answer}</p>
+                `;
                 container.appendChild(div);
             });
         }
 
         function addNewInformation() {
-            const titleInput = document.getElementById('infoTitle');
-            const contentInput = document.getElementById('infoContent');
-            
-            const title = titleInput.value.trim();
-            const content = contentInput.value.trim();
+            const category = document.getElementById('infoCategory').value;
+            const question = document.getElementById('infoQuestion').value.trim();
+            const answer = document.getElementById('infoAnswer').value.trim();
 
-            if (!title || !content) {
-                alert('يرجى ملء حقل العنوان وحقل التفاصيل معاً.');
+            if (!question || !answer) {
+                alert('يرجى ملء خانة السؤال وخانة المعلومة (الإجابة).');
                 return;
             }
 
-            // إضافة العنصر الجديد إلى جدول information
-            informationTable.push({ title: title, content: content });
+            // إضافة البيانات الجديدة
+            informationTable.push({ category: category, question: question, answer: answer });
 
-            // تفريغ الحقول بعد الإضافة
-            titleInput.value = '';
-            contentInput.value = '';
+            // تفريغ الحقول وإخفاء اللوحة
+            document.getElementById('infoQuestion').value = '';
+            document.getElementById('infoAnswer').value = '';
+            toggleAddPanel();
 
-            alert('تمت إضافة المعلومة إلى جدول (information) بنجاح!');
+            alert('تمت إضافة المعلومة بنجاح!');
+            // نقوم بتحديث البحث فوراً لإظهار النتيجة الجديدة إذا كان شريط البحث يحتوي على نص
+            performSearch();
         }
     </script>
 </body>
