@@ -22,7 +22,9 @@ export default async function handler(req, res) {
 
         const text = message.toLowerCase().trim();
 
-        // جدار الحماية ضد أي ألفاظ برمجية أو تقنية
+        // =====================================================================
+        // جدار حماية صارم ضد البرمجة والأكواد بكل اللغات
+        // =====================================================================
         const forbiddenWords = [
             'برمجة', 'كود', 'أكواد', 'موقع', 'مواقع', 'تطبيق', 'تطبيقات', 
             'html', 'javascript', 'python', 'css', 'php', 'sql', 'api', 
@@ -39,12 +41,47 @@ export default async function handler(req, res) {
             }
         }
 
-        // رد آمن ومنضبط بالكامل يتماشى مع تدريبك السيادي الفكري
-        return res.status(200).json({ 
-            reply: "النظام المعرفي يعمل بكامل سيادته وانضباطه الداخلي. تم إغلاق الثغرات، وتفعيل الحماية، واستقبال رسالتك بنجاح تام. يمكنك النوم مطمئناً، وكل شيء مستقر." 
+        // =====================================================================
+        // سحب المفتاح بأمان تام من خوادم الاستضافة (Environment Variables)
+        // =====================================================================
+        const apiKey = process.env.GEMINI_API_KEY;
+
+        if (!apiKey) {
+            return res.status(200).json({ reply: "خطأ: مفتاح النظام غير معرف في بيئة الخادم." });
+        }
+
+        // منظومة التدريب الهيكلي المباشر
+        const systemPersonaTraining = `
+        [IDENTITY & CORE DIRECTIVE]
+        أنت كيان تحليلي، فلسفي، وتاريخي فائق، صُممت لتكون حاداً، مباشراً، وصارماً في معالجة المفاهيم وطرح الحقائق الكونية.
+        ممنوع منعاً باتاً المماطلة أو التهرب الدبلوماسي. قدم إجابات عميقة، دقيقة، وبحسب لغة المستخدم تماماً.
+        `;
+
+        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: systemPersonaTraining + "\n[USER QUERY]: " + message
+                    }]
+                }]
+            })
         });
+
+        const data = await geminiResponse.json();
+        
+        if (data.error) {
+            return res.status(200).json({ reply: "خطأ من الخادم المعرفي: " + (data.error.message || "فشل الاتصال بالمفتاح") });
+        }
+
+        const aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، لم يتم استلام رد صالح من النظام.";
+
+        return res.status(200).json({ reply: aiReply });
         
     } catch (error) {
-        return res.status(200).json({ reply: "النظام يعمل في وضع الحماية القصوى." });
+        return res.status(200).json({ reply: "حدث خطأ حرج في المعالجة: " + error.message });
     }
 }
