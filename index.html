@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Search - المحرك المحلي</title>
+    <title>My Search - المحرك الدلالي مع Supabase</title>
+    <!-- مكتبة Supabase للاتصال بقاعدة البيانات -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg-color: #0f172a;
-            --panel-bg: rgba(30, 41, 59, 0.85); /* خلفية شفافة قليلاً للوحة */
+            --panel-bg: rgba(30, 41, 59, 0.85);
             --text-color: #f8fafc;
             --accent-color: #3b82f6;
             --border-color: #475569;
             --result-bg: rgba(51, 65, 85, 0.85);
             --input-bg: #0f172a;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -25,170 +25,38 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            /* الخلفية المطلوبة */
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
-
         h1 { margin-bottom: 20px; font-size: 2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-
-        /* شريط البحث */
-        .search-box-container {
-            width: 100%;
-            max-width: 700px;
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        .search-box-container input {
-            flex: 1;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 14px 20px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            outline: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .search-box-container button {
-            background-color: var(--accent-color);
-            color: #fff;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: background-color 0.2s;
-        }
-        .search-box-container button:hover { background-color: #2563eb; }
-
-        /* زر "إضافة معلومة لموقع My Search" */
-        .toggle-add-btn {
-            background-color: #10b981;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 20px;
-            font-size: 1rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: transform 0.1s;
-        }
-        .toggle-add-btn:active { transform: scale(0.98); }
-
-        /* لوحة الإضافة (مخفية افتراضياً) */
-        .add-info-panel {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 700px;
-            margin-bottom: 30px;
-            display: none; /* مخفية */
-            flex-direction: column;
-            gap: 15px;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-        }
-
+        .search-box-container { width: 100%; max-width: 700px; display: flex; gap: 10px; margin-bottom: 30px; }
+        .search-box-container input { flex: 1; background-color: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color); padding: 14px 20px; border-radius: 12px; font-size: 1.1rem; outline: none; }
+        .search-box-container button { background-color: var(--accent-color); color: #fff; border: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        .toggle-add-btn { background-color: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-bottom: 20px; font-size: 1rem; }
+        .add-info-panel { background-color: var(--panel-bg); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; width: 100%; max-width: 700px; margin-bottom: 30px; display: none; flex-direction: column; gap: 15px; backdrop-filter: blur(5px); }
         .add-info-panel.show { display: flex; }
-
-        .add-info-panel h3 { font-size: 1.3rem; margin-bottom: 5px; color: #6ee7b7; }
-
         .form-group { display: flex; flex-direction: column; gap: 5px; }
         .form-group label { font-size: 0.9rem; color: #94a3b8; }
-
-        .add-info-panel input, 
-        .add-info-panel select,
-        .add-info-panel textarea {
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: 8px;
-            outline: none;
-            font-size: 1rem;
-        }
-
-        /* الخانة الواسعة (المعلومة) */
-        .add-info-panel textarea {
-            resize: vertical; /* يمكن توسيعها */
-            min-height: 100px;
-            font-family: sans-serif;
-        }
-
-        .submit-info-btn {
-            background-color: #059669;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1.1rem;
-            margin-top: 10px;
-        }
-        .submit-info-btn:hover { background-color: #047857; }
-
-        /* نتائج البحث */
-        .results-container {
-            width: 100%;
-            max-width: 700px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .result-item {
-            background-color: var(--result-bg);
-            padding: 20px;
-            border-radius: 12px;
-            border-right: 5px solid var(--accent-color);
-            line-height: 1.6;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            backdrop-filter: blur(5px);
-        }
-
-        .result-tag {
-            display: inline-block;
-            background-color: #0f172a;
-            color: #6ee7b7;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            margin-bottom: 8px;
-        }
-
+        .add-info-panel input, .add-info-panel select, .add-info-panel textarea { background-color: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; outline: none; font-size: 1rem; }
+        .add-info-panel textarea { resize: vertical; min-height: 100px; }
+        .submit-info-btn { background-color: #059669; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        .results-container { width: 100%; max-width: 700px; display: flex; flex-direction: column; gap: 15px; }
+        .result-item { background-color: var(--result-bg); padding: 20px; border-radius: 12px; border-right: 5px solid var(--accent-color); line-height: 1.6; }
+        .result-tag { display: inline-block; background-color: #0f172a; color: #6ee7b7; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 8px; }
         .result-question { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; display: block; }
-
-        .no-result {
-            color: #94a3b8;
-            text-align: center;
-            margin-top: 30px;
-            font-size: 1.1rem;
-        }
+        .no-result { color: #94a3b8; text-align: center; margin-top: 30px; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
-    <h1>My Search - المحرك المحلي</h1>
+    <h1>My Search - المحرك الدلالي</h1>
 
-    <!-- زر إظهار لوحة الإضافة -->
     <button class="toggle-add-btn" onclick="toggleAddPanel()">➕ إضافة معلومة لموقع My Search</button>
 
-    <!-- لوحة الإضافة الجديدة -->
     <div class="add-info-panel" id="addPanel">
-        <h3>إضافة معلومة جديدة</h3>
-        
+        <h3>إضافة معلومة جديدة إلى جدول Supabase</h3>
         <div class="form-group">
             <label>صفة السؤال (التصنيف):</label>
             <select id="infoCategory">
@@ -200,99 +68,127 @@
                 <option value="تاريخ">تاريخ</option>
             </select>
         </div>
-
         <div class="form-group">
             <label>ما هو سؤال لهذه المعلومة؟</label>
             <input type="text" id="infoQuestion" placeholder="اكتب السؤال هنا...">
         </div>
-
         <div class="form-group">
             <label>المعلومة (إجابة على السؤال):</label>
-            <textarea id="infoAnswer" placeholder="اكتب التفاصيل هنا... (يمكنك توسيع الخانة من الزاوية)"></textarea>
+            <textarea id="infoAnswer" placeholder="اكتب التفاصيل هنا..."></textarea>
         </div>
-
-        <button class="submit-info-btn" onclick="addNewInformation()">حفظ المعلومة في قاعدة البيانات</button>
+        <button class="submit-info-btn" onclick="addNewInformation()">حفظ في Supabase</button>
     </div>
 
-    <!-- شريط البحث -->
     <div class="search-box-container">
-        <input type="text" id="searchInput" placeholder="ابحث عن سؤال أو معلومة..." onkeyup="performSearch()">
-        <button onclick="performSearch()">بحث</button>
+        <input type="text" id="searchInput" placeholder="ابحث دلالياً في جدول information..." onkeyup="performSemanticSearch()">
+        <button onclick="performSemanticSearch()">بحث</button>
     </div>
 
-    <!-- عرض النتائج -->
     <div class="results-container" id="resultsContainer">
-        <div class="no-result">ابدأ البحث أو قم بإضافة معلومات جديدة...</div>
+        <div class="no-result">ابدأ البحث الدلالي في قاعدة البيانات...</div>
     </div>
 
     <script>
-        // جدول معلومات محلي (قاعدة البيانات)
-        let informationTable = [
-            { category: "تكنولوجيا", question: "ما هي البرمجة؟", answer: "البرمجة هي كتابة تعليمات وتوجيهات لجهاز الكمبيوتر لتنفيذ مهام محددة." },
-            { category: "تاريخ", question: "متى تأسست الدولة الأموية؟", answer: "تأسست الدولة الأموية عام 41 هـ على يد معاوية بن أبي سفيان." },
-            { category: "علوم", question: "مما يتكون الماء؟", answer: "يتكون الماء من ذرتي هيدروجين وذرة أكسجين (H2O)." }
-        ];
+        // إعدادات الاتصال بـ Supabase (قم بتغييرها بمعلومات مشروعك الحقيقية)
+        const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // دالة لإظهار/إخفاء لوحة الإضافة
         function toggleAddPanel() {
-            const panel = document.getElementById('addPanel');
-            panel.classList.toggle('show');
+            document.getElementById('addPanel').classList.toggle('show');
         }
 
-        function performSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            const container = document.getElementById('resultsContainer');
-            container.innerHTML = '';
-
-            if (!query) {
-                container.innerHTML = '<div class="no-result">الرجاء إدخال كلمة للبحث.</div>';
-                return;
-            }
-
-            // البحث في السؤال أو الإجابة
-            const matchedResults = informationTable.filter(item => 
-                item.question.toLowerCase().includes(query) || item.answer.toLowerCase().includes(query)
-            );
-
-            if (matchedResults.length === 0) {
-                container.innerHTML = '<div class="no-result">لا توجد نتائج مطابقة.</div>';
-                return;
-            }
-
-            // عرض النتائج بالتصميم الجديد
-            matchedResults.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'result-item';
-                div.innerHTML = `
-                    <span class="result-tag">${item.category}</span>
-                    <strong class="result-question">${item.question}</strong>
-                    <p>${item.answer}</p>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function addNewInformation() {
+        // إضافة معلومة جديدة إلى جدول information في Supabase
+        async function addNewInformation() {
             const category = document.getElementById('infoCategory').value;
             const question = document.getElementById('infoQuestion').value.trim();
             const answer = document.getElementById('infoAnswer').value.trim();
 
             if (!question || !answer) {
-                alert('يرجى ملء خانة السؤال وخانة المعلومة (الإجابة).');
+                alert('يرجى ملء خانة السؤال والمعلومة.');
                 return;
             }
 
-            // إضافة البيانات الجديدة
-            informationTable.push({ category: category, question: question, answer: answer });
+            const { data, error } = await supabaseClient
+                .from('information')
+                .insert([{ category, question, answer }]);
 
-            // تفريغ الحقول وإخفاء اللوحة
+            if (error) {
+                alert('حدث خطأ أثناء الإضافة: ' + error.message);
+                return;
+            }
+
+            alert('تمت إضافة المعلومة إلى جدول information بنجاح!');
             document.getElementById('infoQuestion').value = '';
             document.getElementById('infoAnswer').value = '';
             toggleAddPanel();
+            performSemanticSearch();
+        }
 
-            alert('تمت إضافة المعلومة بنجاح!');
-            // نقوم بتحديث البحث فوراً لإظهار النتيجة الجديدة إذا كان شريط البحث يحتوي على نص
-            performSearch();
+        // المحرك الدلالي لقراءة البيانات من Supabase وتحليل مطابقتها
+        async function performSemanticSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '';
+
+            if (!query) {
+                container.innerHTML = '<div class="no-result">الرجاء إدخال نص للبحث.</div>';
+                return;
+            }
+
+            // جلب البيانات من جدول information في Supabase
+            const { data: informationTable, error } = await supabaseClient
+                .from('information')
+                .select('*');
+
+            if (error) {
+                container.innerHTML = '<div class="no-result">خطأ في الاتصال بقاعدة البيانات.</div>';
+                return;
+            }
+
+            if (!informationTable || informationTable.length === 0) {
+                container.innerHTML = '<div class="no-result">جدول المعلومات فارغ حالياً.</div>';
+                return;
+            }
+
+            const queryWords = query.split(/\s+/).filter(w => w.length > 0);
+
+            // تطبيق خوارزمية المحرك الدلالي لحساب الأهمية والتطابق
+            const scoredResults = informationTable.map(item => {
+                let score = 0;
+                const qText = (item.question || '').toLowerCase();
+                const aText = (item.answer || '').toLowerCase();
+                const cText = (item.category || '').toLowerCase();
+
+                queryWords.forEach(word => {
+                    if (qText.includes(word)) score += 10; // تطابق قوي في السؤال
+                    if (aText.includes(word)) score += 3;  // تطابق في تفاصيل الإجابة
+                    if (cText.includes(word)) score += 5;  // تطابق في التصنيف
+                });
+
+                return { item, score };
+            }).filter(res => res.score > 0);
+
+            // ترتيب النتائج تنازلياً حسب دقة المحرك الدلالي
+            scoredResults.sort((a, b) => b.score - a.score);
+            const topResults = scoredResults.slice(0, 30);
+
+            if (topResults.length === 0) {
+                container.innerHTML = '<div class="no-result">لا توجد نتائج مطابقة دلالياً.</div>';
+                return;
+            }
+
+            topResults.forEach(res => {
+                const item = res.item;
+                const div = document.createElement('div');
+                div.className = 'result-item';
+                div.innerHTML = `
+                    <span class="result-tag">${item.category || 'عامة'}</span>
+                    <strong class="result-question">${item.question}</strong>
+                    <p>${item.answer}</p>
+                `;
+                container.appendChild(div);
+            });
         }
     </script>
 </body>
