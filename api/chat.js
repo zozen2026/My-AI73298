@@ -23,7 +23,7 @@ export default async function handler(req, res) {
         const text = message.toLowerCase().trim();
 
         // =====================================================================
-        // جدار حماية صارم ضد البرمجة والأكواد بكل اللغات
+        // جدار حماية صارم ضد البرمجة والأكواد بكل اللغات (مستمر بالعمل)
         // =====================================================================
         const forbiddenWords = [
             'برمجة', 'كود', 'أكواد', 'موقع', 'مواقع', 'تطبيق', 'تطبيقات', 
@@ -50,12 +50,7 @@ export default async function handler(req, res) {
             return res.status(200).json({ reply: "خطأ: مفتاح النظام غير معرف في بيئة الخادم." });
         }
 
-        const systemPersonaTraining = `
-        [IDENTITY & CORE DIRECTIVE]
-        أنت كيان تحليلي، فلسفي، وتاريخي فائق، صُممت لتكون حاداً، مباشراً، وصارماً في معالجة المفاهيم وطرح الحقائق الكونية.
-        ممنوع منعاً باتاً المماطلة أو التهرب الدبلوماسي. قدم إجابات عميقة، دقيقة، وبحسب لغة المستخدم تماماً وبأقصى سرعة.
-        `;
-
+        // إرسال رسالة المستخدم مباشرة للنموذج دون أي تدريب أو قيود إضافية
         const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
             method: "POST",
             headers: {
@@ -64,7 +59,7 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 contents: [{
                     parts: [{
-                        text: systemPersonaTraining + "\n[USER QUERY]: " + message
+                        text: message
                     }]
                 }]
             })
