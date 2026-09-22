@@ -23,7 +23,7 @@ export default async function handler(req, res) {
         const text = message.toLowerCase().trim();
 
         // =====================================================================
-        // محرك دلالي لرصد سؤال المطور
+        // محرك دلالي رصد سؤال المطور (مع الأخطاء الإملائية وتنوع الصيغ)
         // =====================================================================
         const developerKeywords = [
             'طورك', 'صممك', 'برمجك', 'انشأك', 'أنشأك', 'صنعك', 'كاتبك', 'من هو مطورك', 
@@ -44,7 +44,7 @@ export default async function handler(req, res) {
         }
 
         // =====================================================================
-        // جدار حماية صارم ضد البرمجة والأكواد بكل اللغات
+        // جدار حماية صارم ضد البرمجة والأكواد بكل اللغات (مستمر بالعمل)
         // =====================================================================
         const forbiddenWords = [
             'برمجة', 'كود', 'أكواد', 'موقع', 'مواقع', 'تطبيق', 'تطبيقات', 
@@ -63,7 +63,7 @@ export default async function handler(req, res) {
         }
 
         // =====================================================================
-        // سحب المفتاح بأمان تام من خوادم الاستضافة
+        // سحب المفتاح بأمان تام من خوادم الاستضافة (Environment Variables)
         // =====================================================================
         const apiKey = process.env.GEMINI_API_KEY;
 
@@ -71,7 +71,7 @@ export default async function handler(req, res) {
             return res.status(200).json({ reply: "خطأ: مفتاح النظام غير معرف في بيئة الخادم." });
         }
 
-        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
