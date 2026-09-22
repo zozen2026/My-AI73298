@@ -56,7 +56,7 @@ export default async function handler(req, res) {
         ممنوع منعاً باتاً المماطلة أو التهرب الدبلوماسي. قدم إجابات عميقة، دقيقة، وبحسب لغة المستخدم تماماً وبأقصى سرعة.
         `;
 
-        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
