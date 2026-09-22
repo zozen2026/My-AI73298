@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     try {
         const body = req.body || {};
         const message = body.message || '';
-        // جعل النموذج الافتراضي هو grok بناءً على رغبتك، أو استقباله من الواجهة
+        // النموذج الافتراضي هو grok بناءً على طلبك
         const selectedModel = body.model || 'grok'; 
 
         if (!message || typeof message !== 'string') {
@@ -67,7 +67,7 @@ export default async function handler(req, res) {
         let aiReply = "";
 
         // =====================================================================
-        // التوجيه بناءً على النموذج المختار (Grok كافتراضي أو Google)
+        // التوجيه بناءً على النموذج المختار (Google أو Grok)
         // =====================================================================
         if (selectedModel === 'google') {
             // نموذج Google Gemini
@@ -93,7 +93,7 @@ export default async function handler(req, res) {
             aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، لم يتم استلام رد صالح من النظام.";
 
         } else {
-            // نموذج Grok (Meta Llama عبر Groq) - وهو الافتراضي
+            // نموذج Grok المحدث والمصحح
             const groqApiKey = process.env.GROQ_API_KEY;
             if (!groqApiKey) {
                 return res.status(200).json({ reply: "خطأ: مفتاح Grok غير معرف في بيئة الخادم." });
@@ -106,7 +106,7 @@ export default async function handler(req, res) {
                     "Authorization": `Bearer ${groqApiKey}`
                 },
                 body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile",
+                    model: "llama-3.1-8b-instant",
                     messages: [{ role: "user", content: message }]
                 })
             });
