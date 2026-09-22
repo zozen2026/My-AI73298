@@ -23,7 +23,7 @@ export default async function handler(req, res) {
         const text = message.toLowerCase().trim();
 
         // =====================================================================
-        // المحرك الدلالي لرصد سؤال المطور (مع الأخطاء الإملائية وتنوع الصيغ)
+        // المحرك الدلالي لرصد سؤال المطور
         // =====================================================================
         const developerKeywords = [
             'طورك', 'صممك', 'برمجك', 'انشأك', 'أنشأك', 'صنعك', 'كاتبك', 'من هو مطورك', 
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
 
         // =====================================================================
         // سحب المفتاح بأمان تام من خوادم الاستضافة
-        // =====================================================
+        // =====================================================================
         const apiKey = process.env.GEMINI_API_KEY;
 
         if (!apiKey) {
@@ -88,10 +88,27 @@ export default async function handler(req, res) {
         const data = await geminiResponse.json();
         
         if (data.error) {
+            // معالجة ذكية لتجاوز الحد المسموح (Quota Exceeded) لتجنب انهيار الواجهة
+            if (data.error.message && data.error.message.includes('Quota exceeded')) {
+                return res.status(200).json({ reply: "عذراً، تم بلوغ الحد المؤقت للطلبات المجانية. يجدر بك الانتظار قليلاً أو تحديث المفتاح." });
+            }
             return res.status(200).json({ reply: "خطأ من الخادم المعرفي: " + (data.error.message || "فشل الاتصال بالمفتاح") });
         }
 
-        const aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، لم يتم استلام رد صالح من النظام.";
+        let aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، لم يتم استلام رد صالح من النظام.";
+
+        // =====================================================================
+        // فلتر منع كلمات (يملك) و (عظيم) لغير الله في الردود الصادرة
+        // =====================================================================
+        const restrictedWords = ['يملك', 'العظيم', 'عظيم'];
+        const lowerReply = aiReply.toLowerCase();
+
+        for (let i = 0; i < restrictedWords.length; i++) {
+            if (lowerReply.includes(restrictedWords[i])) {
+                aiReply = "عذراً، تم حجب هذا الرد لاحتوائه على ألفاظ مصونة.";
+                break;
+            }
+        }
 
         return res.status(200).json({ reply: aiReply });
         
