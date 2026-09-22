@@ -29,7 +29,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            height: 100dvh; /* دعم الشاشات الكاملة للموبايل */
+            height: 100dvh;
             overflow: hidden;
         }
 
@@ -52,19 +52,25 @@
             color: var(--text-color);
         }
 
-        /* إعدادات اختيار الألوان */
-        .theme-selector {
+        /* حاوية الخيارات في الشريط العلوي */
+        .header-controls {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
         }
 
-        .theme-selector label {
+        .selector-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .selector-group label {
             font-size: 0.85rem;
             opacity: 0.8;
         }
 
-        .theme-selector select {
+        .selector-group select {
             background-color: var(--bg-color);
             color: var(--text-color);
             border: 1px solid var(--border-color);
@@ -160,10 +166,10 @@
                 padding: 10px 12px;
             }
             .logo-area {
-                font-size: 1.05rem;
+                font-size: 1rem;
             }
-            .theme-selector label {
-                display: none; /* إخفاء الكلمة وتوفير مساحة على الجوال */
+            .selector-group label {
+                display: none; /* إخفاء الكلمات وتوفير مساحة على الجوال */
             }
             .message {
                 max-width: 92%;
@@ -174,17 +180,29 @@
 </head>
 <body>
 
-    <!-- الشريط العلوي الذي يحوي الاسم واختيار الألوان -->
+    <!-- الشريط العلوي يحوي الاسم واختيار النماذج والألوان -->
     <header>
         <div class="logo-area">My AI</div>
-        <div class="theme-selector">
-            <label for="themeSelect">اللون:</label>
-            <select id="themeSelect" onchange="changeTheme(this.value)">
-                <option value="blue">أزرق داكن (افتراضي)</option>
-                <option value="emerald">أخضر زمردي</option>
-                <option value="purple">بنفسجي ملكي</option>
-                <option value="dark">أسود فاحم</option>
-            </select>
+        <div class="header-controls">
+            <!-- اختيار النموذج (Grok افتراضياً) -->
+            <div class="selector-group">
+                <label for="modelSelect">النموذج:</label>
+                <select id="modelSelect">
+                    <option value="grok" selected>نموذج Grok</option>
+                    <option value="google">نموذج Google</option>
+                </select>
+            </div>
+
+            <!-- اختيار الثيم/اللون -->
+            <div class="selector-group">
+                <label for="themeSelect">اللون:</label>
+                <select id="themeSelect" onchange="changeTheme(this.value)">
+                    <option value="blue">أزرق داكن</option>
+                    <option value="emerald">أخضر زمردي</option>
+                    <option value="purple">بنفسجي ملكي</option>
+                    <option value="dark">أسود فاحم</option>
+                </select>
+            </div>
         </div>
     </header>
 
@@ -236,7 +254,6 @@
                 root.style.setProperty('--user-msg', '#404040');
                 root.style.setProperty('--ai-msg', '#212121');
             }
-            // حفظ اختيار المستخدم في الذاكرة المحلية للمتصفح
             localStorage.setItem('selected_theme', theme);
         }
 
@@ -258,7 +275,9 @@
         async function sendMessage() {
             const input = document.getElementById('userInput');
             const container = document.getElementById('chatContainer');
+            const modelSelect = document.getElementById('modelSelect');
             const text = input.value.trim();
+            const selectedModel = modelSelect.value;
 
             if (!text) return;
 
@@ -272,11 +291,11 @@
             container.scrollTop = container.scrollHeight;
 
             try {
-                // استدعاء ملف الـ API الخلفي (تأكد أن مسار الـ API صحيح حسب مشروعك)
+                // إرسال الرسالة مع النموذج المحدد للخلفية
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text })
+                    body: JSON.stringify({ message: text, model: selectedModel })
                 });
 
                 const data = await response.json();

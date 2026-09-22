@@ -15,6 +15,8 @@ export default async function handler(req, res) {
     try {
         const body = req.body || {};
         const message = body.message || '';
+        // جعل النموذج الافتراضي هو grok بناءً على رغبتك، أو استقباله من الواجهة
+        const selectedModel = body.model || 'grok'; 
 
         if (!message || typeof message !== 'string') {
             return res.status(200).json({ reply: "الرسالة فارغة." });
@@ -44,7 +46,7 @@ export default async function handler(req, res) {
         }
 
         // =====================================================================
-        // جدار حماية صارم ضد البرمجة والأكواد بكل اللغات
+        // جدار حماية صارم ضد البرمجة والأكواد
         // =====================================================================
         const forbiddenWords = [
             'برمجة', 'كود', 'أكواد', 'موقع', 'مواقع', 'تطبيق', 'تطبيقات', 
@@ -62,43 +64,64 @@ export default async function handler(req, res) {
             }
         }
 
+        let aiReply = "";
+
         // =====================================================================
-        // سحب المفتاح بأمان تام من خوادم الاستضافة
+        // التوجيه بناءً على النموذج المختار (Grok كافتراضي أو Google)
         // =====================================================================
-        const apiKey = process.env.GEMINI_API_KEY;
-
-        if (!apiKey) {
-            return res.status(200).json({ reply: "خطأ: مفتاح النظام غير معرف في بيئة الخادم." });
-        }
-
-        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: message
-                    }]
-                }]
-            })
-        });
-
-        const data = await geminiResponse.json();
-        
-        if (data.error) {
-            // معالجة ذكية لتجاوز الحد المسموح (Quota Exceeded) لتجنب انهيار الواجهة
-            if (data.error.message && data.error.message.includes('Quota exceeded')) {
-                return res.status(200).json({ reply: "عذراً، تم بلوغ الحد المؤقت للطلبات المجانية. يجدر بك الانتظار قليلاً أو تحديث المفتاح." });
+        if (selectedModel === 'google') {
+            // نموذج Google Gemini
+            const apiKey = process.env.GEMINI_API_KEY;
+            if (!apiKey) {
+                return res.status(200).json({ reply: "خطأ: مفتاح Google غير معرف في بيئة الخادم." });
             }
-            return res.status(200).json({ reply: "خطأ من الخادم المعرفي: " + (data.error.message || "فشل الاتصال بالمفتاح") });
+
+            const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: message }] }]
+                })
+            });
+
+            const data = await geminiResponse.json();
+            
+            if (data.error) {
+                return res.status(200).json({ reply: "خطأ من خادم Google: " + (data.error.message || "فشل الاتصال بالمفتاح") });
+            }
+
+            aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، لم يتم استلام رد صالح من النظام.";
+
+        } else {
+            // نموذج Grok (Meta Llama عبر Groq) - وهو الافتراضي
+            const groqApiKey = process.env.GROQ_API_KEY;
+            if (!groqApiKey) {
+                return res.status(200).json({ reply: "خطأ: مفتاح Grok غير معرف في بيئة الخادم." });
+            }
+
+            const groqResponse = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${groqApiKey}`
+                },
+                body: JSON.stringify({
+                    model: "llama-3.3-70b-versatile",
+                    messages: [{ role: "user", content: message }]
+                })
+            });
+
+            const groqData = await groqResponse.json();
+            
+            if (groqData.error) {
+                return res.status(200).json({ reply: "خطأ من خادم Grok: " + (groqData.error.message || "فشل الاتصال") });
+            }
+
+            aiReply = groqData?.choices?.[0]?.message?.content || "عذراً، لم يتم استلام رد من نموذج Grok.";
         }
 
-        let aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، لم يتم استلام رد صالح من النظام.";
-
         // =====================================================================
-        // فلتر منع كلمات (يملك) و (عظيم) لغير الله في الردود الصادرة
+        // فلتر منع الكلمات المصونة (يملك، عظيم)
         // =====================================================================
         const restrictedWords = ['يملك', 'العظيم', 'عظيم'];
         const lowerReply = aiReply.toLowerCase();
