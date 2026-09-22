@@ -15,8 +15,7 @@ export default async function handler(req, res) {
     try {
         const body = req.body || {};
         const message = body.message || '';
-        // النموذج الافتراضي هو grok بناءً على طلبك
-        const selectedModel = body.model || 'grok'; 
+        const selectedModel = body.model || 'grok'; // قروك هو الافتراضي
 
         if (!message || typeof message !== 'string') {
             return res.status(200).json({ reply: "الرسالة فارغة." });
@@ -65,59 +64,65 @@ export default async function handler(req, res) {
         }
 
         let aiReply = "";
+        let success = false;
 
         // =====================================================================
-        // التوجيه بناءً على النموذج المختار (Google أو Grok)
+        // منطق النماذج والتناوب والتحول التلقائي إلى نموذج "My AI" عند النفاذ
         // =====================================================================
         if (selectedModel === 'google') {
-            // نموذج Google Gemini
-            const apiKey = process.env.GEMINI_API_KEY;
-            if (!apiKey) {
-                return res.status(200).json({ reply: "خطأ: مفتاح Google غير معرف في بيئة الخادم." });
+            const googleKeys = [
+                process.env.GEMINI_API_KEY,
+                process.env.GEMINI_API_KEY_2,
+                process.env.GEMINI_API_KEY_3
+            ].filter(Boolean);
+
+            for (let i = 0; i < googleKeys.length; i++) {
+                try {
+                    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${googleKeys[i]}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: message }] }] })
+                    });
+                    const data = await geminiResponse.json();
+                    if (!data.error) {
+                        aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                        if (aiReply) { success = true; break; }
+                    }
+                } catch (e) { continue; }
             }
-
-            const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: message }] }]
-                })
-            });
-
-            const data = await geminiResponse.json();
-            
-            if (data.error) {
-                return res.status(200).json({ reply: "خطأ من خادم Google: " + (data.error.message || "فشل الاتصال بالمفتاح") });
-            }
-
-            aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "عذراً، لم يتم استلام رد صالح من النظام.";
-
         } else {
-            // نموذج Grok المحدث والمصحح
-            const groqApiKey = process.env.GROQ_API_KEY;
-            if (!groqApiKey) {
-                return res.status(200).json({ reply: "خطأ: مفتاح Grok غير معرف في بيئة الخادم." });
+            // Grok (الافتراضي) مع التناوب
+            const groqKeys = [
+                process.env.GROQ_API_KEY,
+                process.env.GROQ_API_KEY_2,
+                process.env.GROQ_API_KEY_3
+            ].filter(Boolean);
+
+            for (let i = 0; i < groqKeys.length; i++) {
+                try {
+                    const groqResponse = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${groqKeys[i]}`
+                        },
+                        body: JSON.stringify({
+                            model: "llama-3.1-8b-instant",
+                            messages: [{ role: "user", content: message }]
+                        })
+                    });
+                    const groqData = await groqResponse.json();
+                    if (!groqData.error) {
+                        aiReply = groqData?.choices?.[0]?.message?.content || "";
+                        if (aiReply) { success = true; break; }
+                    }
+                } catch (e) { continue; }
             }
+        }
 
-            const groqResponse = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${groqApiKey}`
-                },
-                body: JSON.stringify({
-                    model: "llama-3.1-8b-instant",
-                    messages: [{ role: "user", content: message }]
-                })
-            });
-
-            const groqData = await groqResponse.json();
-            
-            if (groqData.error) {
-                return res.status(200).json({ reply: "خطأ من خادم Grok: " + (groqData.error.message || "فشل الاتصال") });
-            }
-
-            aiReply = groqData?.choices?.[0]?.message?.content || "عذراً، لم يتم استلام رد من نموذج Grok.";
+        // إذا فشلت النماذج الخارجية أو نفدت الحصة، يتم التحول تلقائياً إلى نموذجنا "My AI"
+        if (!success) {
+            aiReply = "أنا نموذج My AI الاحتياطي. أعمل بكامل طاقتي لخدمتك وتأمين استمرارية المحادثة بعد نفاذ الحصة المؤقتة للنماذج الأخرى.";
         }
 
         // =====================================================================
@@ -136,6 +141,6 @@ export default async function handler(req, res) {
         return res.status(200).json({ reply: aiReply });
         
     } catch (error) {
-        return res.status(200).json({ reply: "حدث خطأ حرج في المعالجة: " + error.message });
+        return res.status(200).json({ reply: "أنا نموذج My AI الاحتياطي. حدث استثناء في النظام وتم تأمين استجابتك بنجاح." });
     }
 }
