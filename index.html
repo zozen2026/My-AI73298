@@ -80,7 +80,7 @@
     </div>
 
     <div class="search-box-container">
-        <input type="text" id="searchInput" placeholder="ابحث دلالياً في جدول information..." onkeyup="performSemanticSearch()">
+        <input type="text" id="searchInput" placeholder="ابحث دلالياً في جدول information..." oninput="debounceSearch()">
         <button onclick="performSemanticSearch()">بحث</button>
     </div>
 
@@ -89,16 +89,17 @@
     </div>
 
     <script>
-        // إعدادات الاتصال بـ Supabase (قم بتغييرها بمعلومات مشروعك الحقيقية)
-        const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        // 🛑 استبدل هذه القيم ببيانات مشروعك الحقيقية من لوحة تحكم Supabase
+        const SUPABASE_URL = 'https://xyzcompany.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6...'; 
+        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         function toggleAddPanel() {
             document.getElementById('addPanel').classList.toggle('show');
         }
 
-        // إضافة معلومة جديدة إلى جدول information في Supabase
+        // إضافة معلومة جديدة لجدول information
         async function addNewInformation() {
             const category = document.getElementById('infoCategory').value;
             const question = document.getElementById('infoQuestion').value.trim();
@@ -109,7 +110,7 @@
                 return;
             }
 
-            const { data, error } = await supabaseClient
+            const { error } = await supabaseClient
                 .from('information')
                 .insert([{ category, question, answer }]);
 
@@ -125,16 +126,26 @@
             performSemanticSearch();
         }
 
+        // تقنية Debounce لتجنب كثرة الطلبات المتكررة أثناء الكتابة
+        let searchTimeout;
+        function debounceSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSemanticSearch();
+            }, 400); // ينتظر 400 ملي ثانية بعد توقف الكتابة ليقوم بالبحث
+        }
+
         // المحرك الدلالي لقراءة البيانات من Supabase وتحليل مطابقتها
         async function performSemanticSearch() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const container = document.getElementById('resultsContainer');
-            container.innerHTML = '';
-
+            
             if (!query) {
                 container.innerHTML = '<div class="no-result">الرجاء إدخال نص للبحث.</div>';
                 return;
             }
+
+            container.innerHTML = '<div class="no-result">جاري البحث في قاعدة البيانات...</div>';
 
             // جلب البيانات من جدول information في Supabase
             const { data: informationTable, error } = await supabaseClient
@@ -142,7 +153,7 @@
                 .select('*');
 
             if (error) {
-                container.innerHTML = '<div class="no-result">خطأ في الاتصال بقاعدة البيانات.</div>';
+                container.innerHTML = '<div class="no-result">خطأ في الاتصال بقاعدة البيانات: تأكد من صحة رابط ومفتاح Supabase.</div>';
                 return;
             }
 
@@ -173,6 +184,7 @@
             scoredResults.sort((a, b) => b.score - a.score);
             const topResults = scoredResults.slice(0, 30);
 
+            container.innerHTML = '';
             if (topResults.length === 0) {
                 container.innerHTML = '<div class="no-result">لا توجد نتائج مطابقة دلالياً.</div>';
                 return;
