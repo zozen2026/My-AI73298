@@ -3,329 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My AI - العقل العميق والطبيعة الحية</title>
+    <title>My Search - محرك البحث المحلي</title>
     <style>
         :root {
             --bg-color: #0f172a;
-            --chat-bg: #1e293b;
+            --panel-bg: #1e293b;
             --text-color: #f8fafc;
             --accent-color: #3b82f6;
-            --accent-hover: #2563eb;
             --border-color: #334155;
-            --user-msg: #2563eb;
-            --ai-msg: #334155;
+            --result-bg: #334155;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            /* خلفية طبيعة هادئة مع تعتيم خفيف */
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb');
             background-size: cover;
             background-position: center;
         }
 
-        header {
-            background-color: var(--chat-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        h1 { margin-bottom: 20px; font-size: 1.8rem; }
+
+        .search-box-container {
             width: 100%;
-            z-index: 10;
-        }
-
-        .logo-area {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--text-color);
-        }
-
-        .header-controls {
+            max-width: 600px;
             display: flex;
-            align-items: center;
             gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .selector-group select {
-            background-color: var(--bg-color);
+        .search-box-container input {
+            flex: 1;
+            background-color: var(--panel-bg);
             color: var(--text-color);
             border: 1px solid var(--border-color);
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 1rem;
             outline: none;
+        }
+
+        .search-box-container button {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
             cursor: pointer;
         }
 
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
+        /* لوحة إضافة معلومات جديدة لجدول information */
+        .add-info-panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            scroll-behavior: smooth;
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .message {
-            max-width: 85%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            line-height: 1.5;
-            font-size: 0.95rem;
-            word-wrap: break-word;
-        }
-
-        .user-message {
-            background-color: var(--user-msg);
-            color: #ffffff;
-            align-self: flex-start;
-        }
-
-        .ai-message {
-            background-color: var(--ai-msg);
-            color: var(--text-color);
-            align-self: flex-end;
-        }
-
-        .input-container {
-            background-color: var(--chat-bg);
-            border-top: 1px solid var(--border-color);
-            padding: 12px 16px;
-            display: flex;
             gap: 10px;
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            align-items: center;
         }
 
-        .input-container input {
-            flex: 1;
+        .add-info-panel h3 { font-size: 1.1rem; }
+        .add-info-panel input {
             background-color: var(--bg-color);
             color: var(--text-color);
             border: 1px solid var(--border-color);
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 0.95rem;
+            padding: 8px 12px;
+            border-radius: 6px;
             outline: none;
         }
 
-        .input-container button {
-            background-color: var(--accent-color);
-            color: #ffffff;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
+        .add-btn {
+            background-color: #10b981 !important;
         }
 
-        /* تصميم زر الميكروفون البرمجي (SVG) احترافي */
-        .mic-btn {
-            background-color: #334155;
-            border: 1px solid var(--border-color);
-            padding: 8px 12px;
+        /* نتائج البحث */
+        .results-container {
+            width: 100%;
+            max-width: 600px;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .result-item {
+            background-color: var(--result-bg);
+            padding: 14px;
             border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            border-right: 4px solid var(--accent-color);
+            line-height: 1.4;
         }
 
-        .mic-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: #f8fafc;
-        }
-
-        .mic-btn.recording {
-            background-color: #ef4444;
-            border-color: #dc2626;
-            animation: pulse 1.2s infinite;
-        }
-
-        .mic-btn.recording svg {
-            fill: #ffffff;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.08); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
+        .no-result {
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo-area">My AI - الفلسفة والطبيعة</div>
-        <div class="header-controls">
-            <div class="selector-group">
-                <select id="modelSelect">
-                    <option value="grok" selected>نموذج Grok (الافتراضي)</option>
-                    <option value="google">نموذج Google</option>
-                    <option value="my-ai">نموذج My AI (الذاتي المطور بحكمة)</option>
-                </select>
-            </div>
-        </div>
-    </header>
+    <h1>My Search - المحرك المحلي</h1>
 
-    <div class="chat-container" id="chatContainer">
-        <div class="message ai-message">مرحباً بك. أنا هنا لنخوض معاً في أعماق المعرفة والفكر. النظام في وضع الصمت الافتراضي؛ يمكنك الكتابة بحرية، أو النقر على زر الميكروفون البرمجي لتفعيل التحدث الصوتي متى شئت.</div>
+    <!-- شريط البحث -->
+    <div class="search-box-container">
+        <input type="text" id="searchInput" placeholder="ابحث في جدول المعلومات..." onkeyup="performSearch()">
+        <button onclick="performSearch()">بحث</button>
     </div>
 
-    <div class="input-container">
-        <!-- زر الميكروفون البرمجي (SVG Vector) -->
-        <button class="mic-btn" id="micBtn" onclick="toggleSpeechRecognition()" title="التحدث بالصوت">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-            </svg>
-        </button>
-        <input type="text" id="userInput" placeholder="اكتب فكرتك أو تفضل بالتحدث..." onkeydown="handleKeyPress(event)">
-        <button onclick="sendMessage(false)">إرسال</button>
+    <!-- لوحة إضافة معلومة جديدة لجدول information -->
+    <div class="add-info-panel">
+        <h3>إضافة معلومة جديدة إلى جدول (information)</h3>
+        <input type="text" id="infoTitle" placeholder="عنوان المعلومة أو الكلمات المفتاحية...">
+        <input type="text" id="infoContent" placeholder="تفاصيل المعلومة...">
+        <button class="add-btn" onclick="addNewInformation()">إضافة للجدول</button>
+    </div>
+
+    <!-- عرض النتائج -->
+    <div class="results-container" id="resultsContainer">
+        <div class="no-result">ابدأ البحث أو أضف معلومات جديدة للجدول...</div>
     </div>
 
     <script>
-        let voiceActive = false; // افتراضياً صامت بلا صوت
-        let recognition = null;
-        let isRecording = false;
+        // جدول معلومات محلي مبدئي (information table)
+        let informationTable = [
+            { title: "البرمجة", content: "البرمجة هي كتابة تعليمات وتوجيهات لجهاز الكمبيوتر لتنفيذ مهام محددة." },
+            { title: "التاريخ", content: "التاريخ هو دراسة الأحداث الماضية المرتبطة بالإنسان والزمن." },
+            { title: "العلوم", content: "العلوم هي أبنية معرفية منظمة تقوم على التجربة والملاحظة لفهم الظواهر." }
+        ];
 
-        // إعداد ميزة تحويل الصوت إلى نص (Speech-to-Text)
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.lang = 'ar-SA';
-            recognition.continuous = false;
-            recognition.interimResults = false;
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '';
 
-            recognition.onstart = function() {
-                isRecording = true;
-                voiceActive = true; // تفعيل الصوت تلقائياً عند استخدام الميكروفون
-                const micBtn = document.getElementById('micBtn');
-                micBtn.classList.add('recording');
-            };
-
-            recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById('userInput').value = transcript;
-                sendMessage(true); // إرسال مع تفعيل النطق الصوتي
-            };
-
-            recognition.onerror = function(event) {
-                stopRecording();
-            };
-
-            recognition.onend = function() {
-                stopRecording();
-            };
-        }
-
-        function toggleSpeechRecognition() {
-            if (!recognition) {
-                alert('متصفحك لا يدعم التعرف الصوتي المباشر.');
+            if (!query) {
+                container.innerHTML = '<div class="no-result">الرجاء إدخال كلمة للبحث في الجدول.</div>';
                 return;
             }
 
-            if (isRecording) {
-                recognition.stop();
-            } else {
-                try {
-                    recognition.start();
-                } catch (e) {
-                    stopRecording();
-                }
-            }
-        }
+            // تصفية الجدول (information) بناءً على البحث
+            const matchedResults = informationTable.filter(item => 
+                item.title.toLowerCase().includes(query) || item.content.toLowerCase().includes(query)
+            );
 
-        function stopRecording() {
-            isRecording = false;
-            const micBtn = document.getElementById('micBtn');
-            micBtn.classList.remove('recording');
-        }
-
-        function speakText(text) {
-            if (!voiceActive || !('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ar-SA';
-            utterance.rate = 1.0;
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') sendMessage(false);
-        }
-
-        async function sendMessage(fromMic = false) {
-            const input = document.getElementById('userInput');
-            const container = document.getElementById('chatContainer');
-            const modelSelect = document.getElementById('modelSelect');
-            const text = input.value.trim();
-            const selectedModel = modelSelect.value;
-
-            if (!text) return;
-
-            // إذا لم يتم استخدام الميكروفون، يبقى الصوت معطلاً (صامت)
-            if (!fromMic) {
-                voiceActive = false;
+            if (matchedResults.length === 0) {
+                container.innerHTML = '<div class="no-result">لا توجد نتائج مطابقة في جدول المعلومات. يمكنك إضافتها عبر لوحة الإضافة بالأعلى.</div>';
+                return;
             }
 
-            const userDiv = document.createElement('div');
-            userDiv.className = 'message user-message';
-            userDiv.textContent = text;
-            container.appendChild(userDiv);
+            // عرض النتائج
+            matchedResults.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'result-item';
+                div.innerHTML = `<strong>${item.title}:</strong> ${item.content}`;
+                container.appendChild(div);
+            });
+        }
 
-            input.value = '';
-            container.scrollTop = container.scrollHeight;
+        function addNewInformation() {
+            const titleInput = document.getElementById('infoTitle');
+            const contentInput = document.getElementById('infoContent');
+            
+            const title = titleInput.value.trim();
+            const content = contentInput.value.trim();
 
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text, model: selectedModel })
-                });
-
-                const data = await response.json();
-                const replyText = data.reply || data.error || 'حدث خطأ في الاستجابة.';
-                
-                const aiDiv = document.createElement('div');
-                aiDiv.className = 'message ai-message';
-                aiDiv.textContent = replyText;
-                container.appendChild(aiDiv);
-
-                // النطق يتم فقط إذا تم تفعيل الميكروفون مسبقاً
-                if (voiceActive) {
-                    speakText(replyText);
-                }
-
-            } catch (error) {
-                const errDiv = document.createElement('div');
-                errDiv.className = 'message ai-message';
-                errDiv.textContent = 'تعذر الاتصال بالعقل.';
-                container.appendChild(errDiv);
+            if (!title || !content) {
+                alert('يرجى ملء حقل العنوان وحقل التفاصيل معاً.');
+                return;
             }
 
-            container.scrollTop = container.scrollHeight;
+            // إضافة العنصر الجديد إلى جدول information
+            informationTable.push({ title: title, content: content });
+
+            // تفريغ الحقول بعد الإضافة
+            titleInput.value = '';
+            contentInput.value = '';
+
+            alert('تمت إضافة المعلومة إلى جدول (information) بنجاح!');
         }
     </script>
 </body>
