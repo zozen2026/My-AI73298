@@ -23,6 +23,27 @@ export default async function handler(req, res) {
         const text = message.toLowerCase().trim();
 
         // =====================================================================
+        // محرك دلالي رصد سؤال المطور (مع الأخطاء الإملائية وتنوع الصيغ)
+        // =====================================================================
+        const developerKeywords = [
+            'طورك', 'صممك', 'برمجك', 'انشأك', 'أنشأك', 'صنعك', 'كاتبك', 'من هو مطورك', 
+            'من صنع', 'من طور', 'من برمج', 'مطورك', 'المطور', 'طرك', 'صمك', 'برمجه',
+            'who made you', 'who developed you', 'who created you'
+        ];
+
+        let isDeveloperQuery = false;
+        for (let i = 0; i < developerKeywords.length; i++) {
+            if (text.includes(developerKeywords[i])) {
+                isDeveloperQuery = true;
+                break;
+            }
+        }
+
+        if (isDeveloperQuery) {
+            return res.status(200).json({ reply: "فرد مطور طورني." });
+        }
+
+        // =====================================================================
         // جدار حماية صارم ضد البرمجة والأكواد بكل اللغات (مستمر بالعمل)
         // =====================================================================
         const forbiddenWords = [
@@ -50,7 +71,6 @@ export default async function handler(req, res) {
             return res.status(200).json({ reply: "خطأ: مفتاح النظام غير معرف في بيئة الخادم." });
         }
 
-        // إرسال رسالة المستخدم مباشرة للنموذج دون أي تدريب أو قيود إضافية
         const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
             method: "POST",
             headers: {
