@@ -23,7 +23,7 @@ export default async function handler(req, res) {
         const text = message.toLowerCase().trim();
 
         // =====================================================================
-        // المحرك الدلالي لسؤال المطور (يجيب بـ "فرد مطور طورني." مع معالجة الأخطاء الإملائية)
+        // المحرك الدلالي لرصد سؤال المطور (مع الأخطاء الإملائية وتنوع الصيغ)
         // =====================================================================
         const developerKeywords = [
             'طورك', 'صممك', 'برمجك', 'انشأك', 'أنشأك', 'صنعك', 'كاتبك', 'من هو مطورك', 
@@ -64,14 +64,14 @@ export default async function handler(req, res) {
 
         // =====================================================================
         // سحب المفتاح بأمان تام من خوادم الاستضافة
-        // =====================================================================
+        // =====================================================
         const apiKey = process.env.GEMINI_API_KEY;
 
         if (!apiKey) {
             return res.status(200).json({ reply: "خطأ: مفتاح النظام غير معرف في بيئة الخادم." });
         }
 
-        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
