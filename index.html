@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Search - المحرك الدلالي مع </title>
+    <title>My Search - المحرك الدلالي</title>
     <!-- مكتبة Supabase للاتصال بقاعدة البيانات -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -45,7 +45,7 @@
         .results-container { width: 100%; max-width: 700px; display: flex; flex-direction: column; gap: 15px; }
         .result-item { background-color: var(--result-bg); padding: 20px; border-radius: 12px; border-right: 5px solid var(--accent-color); line-height: 1.6; }
         .result-tag { display: inline-block; background-color: #0f172a; color: #6ee7b7; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 8px; }
-        .result-question { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; display: block; }
+        .result-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; display: block; }
         .no-result { color: #94a3b8; text-align: center; margin-top: 30px; font-size: 1.1rem; }
     </style>
 </head>
@@ -56,9 +56,9 @@
     <button class="toggle-add-btn" onclick="toggleAddPanel()">➕ إضافة معلومة لموقع My Search</button>
 
     <div class="add-info-panel" id="addPanel">
-        <h3>إضافة معلومة جديدة إلى جدول </h3>
+        <h3>إضافة معلومة جديدة إلى جدول Information</h3>
         <div class="form-group">
-            <label>صفة السؤال (التصنيف):</label>
+            <label>التصنيف (category):</label>
             <select id="infoCategory">
                 <option value="عامة">عامة</option>
                 <option value="زراعة">زراعة</option>
@@ -66,15 +66,16 @@
                 <option value="تكنولوجيا">تكنولوجيا</option>
                 <option value="علوم">علوم</option>
                 <option value="تاريخ">تاريخ</option>
+                <option value="أحكام شرعية">أحكام شرعية</option>
             </select>
         </div>
         <div class="form-group">
-            <label>ما هو سؤال لهذه المعلومة؟</label>
-            <input type="text" id="infoQuestion" placeholder="اكتب السؤال هنا...">
+            <label>عنوان المعلومة / السؤال (title):</label>
+            <input type="text" id="infoTitle" placeholder="اكتب العنوان هنا...">
         </div>
         <div class="form-group">
-            <label>المعلومة (إجابة على السؤال):</label>
-            <textarea id="infoAnswer" placeholder="اكتب التفاصيل هنا..."></textarea>
+            <label>المعلومة / النص (snippet):</label>
+            <textarea id="infoSnippet" placeholder="اكتب التفاصيل هنا..."></textarea>
         </div>
         <button class="submit-info-btn" onclick="addNewInformation()">حفظ في My Search</button>
     </div>
@@ -89,8 +90,7 @@
     </div>
 
     <script>
-        // 🛑 استبدل هذه القيم ببيانات مشروعك الحقيقية من لوحة تحكم Supabase
-        const SUPABASE_URL = 'https://lzvtnfdgynwczrkwlwhf.supabase.co/rest/v1/'; 
+        const SUPABASE_URL = 'https://lzvtnfdgynwczrkwlwhf.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6dnRuZmRneW53Y3pya3dsd2hmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNDIxMTEsImV4cCI6MjEwNDcxODExMX0.w2hNlJ4SszyMBkUVjr1qiWNTTPxHMHkM9YOFtVP-pVI'; 
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -99,43 +99,43 @@
             document.getElementById('addPanel').classList.toggle('show');
         }
 
-        // إضافة معلومة جديدة لجدول information
+        // إضافة معلومة جديدة لجدول Information بالأعمدة الصحيحة (category, title, snippet)
         async function addNewInformation() {
             const category = document.getElementById('infoCategory').value;
-            const question = document.getElementById('infoQuestion').value.trim();
-            const answer = document.getElementById('infoAnswer').value.trim();
+            const title = document.getElementById('infoTitle').value.trim();
+            const snippet = document.getElementById('infoSnippet').value.trim();
 
-            if (!question || !answer) {
-                alert('يرجى ملء خانة السؤال والمعلومة.');
+            if (!title || !snippet) {
+                alert('يرجى ملء خانة العنوان والمعلومة.');
                 return;
             }
 
+            // الإضافة إلى جدول Information المكتوب بحرف كبير كما في داتابيز Supabase
             const { error } = await supabaseClient
-                .from('information')
-                .insert([{ category, question, answer }]);
+                .from('Information')
+                .insert([{ category, title, snippet }]);
 
             if (error) {
                 alert('حدث خطأ أثناء الإضافة: ' + error.message);
                 return;
             }
 
-            alert('تمت إضافة المعلومة إلى جدول information بنجاح!');
-            document.getElementById('infoQuestion').value = '';
-            document.getElementById('infoAnswer').value = '';
+            alert('تمت إضافة المعلومة إلى My Search بنجاح!');
+            document.getElementById('infoTitle').value = '';
+            document.getElementById('infoSnippet').value = '';
             toggleAddPanel();
             performSemanticSearch();
         }
 
-        // تقنية Debounce لتجنب كثرة الطلبات المتكررة أثناء الكتابة
         let searchTimeout;
         function debounceSearch() {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 performSemanticSearch();
-            }, 400); // ينتظر 400 ملي ثانية بعد توقف الكتابة ليقوم بالبحث
+            }, 400);
         }
 
-        // المحرك الدلالي لقراءة البيانات من Supabase وتحليل مطابقتها
+        // البحث الدلالي بداخل أعمدة Information الصحيحة (category, title, snippet)
         async function performSemanticSearch() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const container = document.getElementById('resultsContainer');
@@ -147,13 +147,12 @@
 
             container.innerHTML = '<div class="no-result">جاري البحث في قاعدة البيانات...</div>';
 
-            // جلب البيانات من جدول information في Supabase
             const { data: informationTable, error } = await supabaseClient
-                .from('information')
+                .from('Information')
                 .select('*');
 
             if (error) {
-                container.innerHTML = '<div class="no-result">خطأ في الاتصال بقاعدة البيانات: تأكد من صحة رابط ومفتاح Supabase.</div>';
+                container.innerHTML = '<div class="no-result">خطأ في الاتصال بقاعدة البيانات: تأكد من صحة المفتاح والرابط.</div>';
                 return;
             }
 
@@ -164,23 +163,21 @@
 
             const queryWords = query.split(/\s+/).filter(w => w.length > 0);
 
-            // تطبيق خوارزمية المحرك الدلالي لحساب الأهمية والتطابق
             const scoredResults = informationTable.map(item => {
                 let score = 0;
-                const qText = (item.question || '').toLowerCase();
-                const aText = (item.answer || '').toLowerCase();
+                const tText = (item.title || '').toLowerCase();
+                const sText = (item.snippet || '').toLowerCase();
                 const cText = (item.category || '').toLowerCase();
 
                 queryWords.forEach(word => {
-                    if (qText.includes(word)) score += 10; // تطابق قوي في السؤال
-                    if (aText.includes(word)) score += 3;  // تطابق في تفاصيل الإجابة
+                    if (tText.includes(word)) score += 10; // تطابق في العنوان
+                    if (sText.includes(word)) score += 3;  // تطابق في المحتوى
                     if (cText.includes(word)) score += 5;  // تطابق في التصنيف
                 });
 
                 return { item, score };
             }).filter(res => res.score > 0);
 
-            // ترتيب النتائج تنازلياً حسب دقة المحرك الدلالي
             scoredResults.sort((a, b) => b.score - a.score);
             const topResults = scoredResults.slice(0, 30);
 
@@ -196,8 +193,8 @@
                 div.className = 'result-item';
                 div.innerHTML = `
                     <span class="result-tag">${item.category || 'عامة'}</span>
-                    <strong class="result-question">${item.question}</strong>
-                    <p>${item.answer}</p>
+                    <strong class="result-title">${item.title}</strong>
+                    <p>${item.snippet}</p>
                 `;
                 container.appendChild(div);
             });
