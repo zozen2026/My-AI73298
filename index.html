@@ -3,24 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Search - المحرك الدلالي الذكي (Vector Engine)</title>
-
-    <!-- مكتبة Supabase -->
+    <title>My Search - المحرك الدلالي</title>
+    <!-- مكتبة Supabase للاتصال بقاعدة البيانات -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- مكتبة تحويل النصوص إلى متجهات رياضية مباشرة في المتصفح -->
-    <script type="module">
-        import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.6.0';
-        env.allowLocalModels = false;
-        
-        window.getEmbeddingPipeline = async () => {
-            if (!window.extractor) {
-                window.extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
-            }
-            return window.extractor;
-        };
-    </script>
-
     <style>
         :root {
             --bg-color: #0f172a;
@@ -31,14 +16,7 @@
             --result-bg: rgba(51, 65, 85, 0.85);
             --input-bg: #0f172a;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -47,187 +25,40 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            background-image: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb');
+            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
-
-        h1 {
-            margin-bottom: 10px;
-            font-size: 1.8rem;
-            text-align: center;
-        }
-
-        .status-bar {
-            background: #1e293b;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            margin-bottom: 20px;
-            color: #38bdf8;
-            border: 1px solid var(--border-color);
-            text-align: center;
-        }
-
-        .toggle-add-btn {
-            background-color: #10b981;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 20px;
-            font-size: 1rem;
-            transition: background 0.2s;
-        }
-
-        .toggle-add-btn:hover {
-            background-color: #059669;
-        }
-
-        .add-info-panel {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 700px;
-            margin-bottom: 25px;
-            display: none;
-            flex-direction: column;
-            gap: 15px;
-            backdrop-filter: blur(8px);
-        }
-
-        .add-info-panel.show {
-            display: flex;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-group label {
-            font-size: 0.9rem;
-            color: #94a3b8;
-        }
-
-        .add-info-panel input, .add-info-panel select, .add-info-panel textarea {
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 10px 14px;
-            border-radius: 8px;
-            outline: none;
-            font-size: 1rem;
-        }
-
-        .add-info-panel textarea {
-            resize: vertical;
-            min-height: 90px;
-        }
-
-        .submit-info-btn {
-            background-color: #059669;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1.05rem;
-        }
-
-        .search-box-container {
-            width: 100%;
-            max-width: 700px;
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        .search-box-container input {
-            flex: 1;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 14px 20px;
-            border-radius: 12px;
-            font-size: 1.05rem;
-            outline: none;
-        }
-
-        .search-box-container button {
-            background-color: var(--accent-color);
-            color: #fff;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1rem;
-            white-space: nowrap;
-        }
-
-        .results-container {
-            width: 100%;
-            max-width: 700px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .result-item {
-            background-color: var(--result-bg);
-            padding: 20px;
-            border-radius: 12px;
-            border-right: 5px solid var(--accent-color);
-            line-height: 1.6;
-            backdrop-filter: blur(5px);
-        }
-
-        .result-tag {
-            display: inline-block;
-            background-color: #0f172a;
-            color: #6ee7b7;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .result-title {
-            font-weight: bold;
-            font-size: 1.25rem;
-            margin-bottom: 8px;
-            display: block;
-            color: #60a5fa;
-        }
-
-        .no-result {
-            color: #94a3b8;
-            text-align: center;
-            margin-top: 20px;
-            font-size: 1rem;
-        }
+        h1 { margin-bottom: 20px; font-size: 2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .search-box-container { width: 100%; max-width: 700px; display: flex; gap: 10px; margin-bottom: 30px; }
+        .search-box-container input { flex: 1; background-color: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color); padding: 14px 20px; border-radius: 12px; font-size: 1.1rem; outline: none; }
+        .search-box-container button { background-color: var(--accent-color); color: #fff; border: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        .toggle-add-btn { background-color: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-bottom: 20px; font-size: 1rem; }
+        .add-info-panel { background-color: var(--panel-bg); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; width: 100%; max-width: 700px; margin-bottom: 30px; display: none; flex-direction: column; gap: 15px; backdrop-filter: blur(5px); }
+        .add-info-panel.show { display: flex; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 0.9rem; color: #94a3b8; }
+        .add-info-panel input, .add-info-panel select, .add-info-panel textarea { background-color: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; outline: none; font-size: 1rem; }
+        .add-info-panel textarea { resize: vertical; min-height: 100px; }
+        .submit-info-btn { background-color: #059669; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        .results-container { width: 100%; max-width: 700px; display: flex; flex-direction: column; gap: 15px; }
+        .result-item { background-color: var(--result-bg); padding: 20px; border-radius: 12px; border-right: 5px solid var(--accent-color); line-height: 1.6; }
+        .result-tag { display: inline-block; background-color: #0f172a; color: #6ee7b7; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 8px; }
+        .result-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; display: block; }
+        .no-result { color: #94a3b8; text-align: center; margin-top: 30px; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
-    <h1>My Search - المحرك الدلالي الذكي</h1>
-    <div class="status-bar" id="status">جاري تهيئة المحرك الرياضي...</div>
+    <h1>My Search - المحرك الدلالي</h1>
 
-    <button class="toggle-add-btn" onclick="toggleAddPanel()">➕ إضافة معلومة جديدة</button>
+    <button class="toggle-add-btn" onclick="toggleAddPanel()">➕ إضافة معلومة لموقع My Search</button>
 
     <div class="add-info-panel" id="addPanel">
-        <h3>إضافة معلومة وتحويلها دلالياً إلى متجه رياضي</h3>
+        <h3>إضافة معلومة جديدة إلى جدول Information</h3>
         <div class="form-group">
-            <label>التصنيف:</label>
+            <label>التصنيف (category):</label>
             <select id="infoCategory">
                 <option value="عامة">عامة</option>
                 <option value="زراعة">زراعة</option>
@@ -239,136 +70,134 @@
             </select>
         </div>
         <div class="form-group">
-            <label>العنوان / السؤال الاصلي:</label>
-            <input type="text" id="infoTitle" placeholder="مثال: كيفية زراعة الطماطم">
+            <label>عنوان المعلومة / السؤال (title):</label>
+            <input type="text" id="infoTitle" placeholder="اكتب العنوان هنا...">
         </div>
         <div class="form-group">
-            <label>المعلومة / التفاصيل:</label>
-            <textarea id="infoSnippet" placeholder="اكتب التفاصيل الكاملة هنا..."></textarea>
+            <label>المعلومة / النص (snippet):</label>
+            <textarea id="infoSnippet" placeholder="اكتب التفاصيل هنا..."></textarea>
         </div>
-        <button class="submit-info-btn" onclick="addNewInformation()">حفظ وتحويل دلالي</button>
+        <button class="submit-info-btn" onclick="addNewInformation()">حفظ في My Search</button>
     </div>
 
     <div class="search-box-container">
-        <input type="text" id="searchInput" placeholder="ابحث على النية (بأي صياغة، خطأ إملائي، أو جملة طويلة/قصيرة)...">
-        <button onclick="performVectorSearch()">بحث دلالي</button>
+        <input type="text" id="searchInput" placeholder="Search" oninput="debounceSearch()">
+        <button onclick="performSemanticSearch()">بحث</button>
     </div>
 
     <div class="results-container" id="resultsContainer">
-        <div class="no-result">اكتب نيتك في مربع البحث لجلب المعلومة المطلوبة...</div>
+        <div class="no-result">ابدأ البحث الدلالي في قاعدة البيانات...</div>
     </div>
 
     <script>
-        // ضع هنا بيانات الاتصال الخاصة بـ Supabase
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; 
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; 
+        const SUPABASE_URL = 'https://lzvtnfdgynwczrkwlwhf.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6dnRuZmRneW53Y3pya3dsd2hmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNDIxMTEsImV4cCI6MjEwNDcxODExMX0.w2hNlJ4SszyMBkUVjr1qiWNTTPxHMHkM9YOFtVP-pVI'; 
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // وظيفة تحويل أي نص إلى متجه رياضي (384 بعد)
-        async function generateVector(text) {
-            const pipe = await window.getEmbeddingPipeline();
-            const output = await pipe(text, { pooling: 'mean', normalize: true });
-            return Array.from(output.data);
-        }
-
-        // تحضير النماذج الدلالية عند فتح الصفحة
-        window.addEventListener('load', async () => {
-            try {
-                await window.getEmbeddingPipeline();
-                document.getElementById('status').innerText = 'المحرك الرياضي جاهز لاستقبال البحث والإضافة!';
-            } catch (err) {
-                document.getElementById('status').innerText = 'حدث خطأ في تحميل نموذج المتجهات: ' + err.message;
-            }
-        });
 
         function toggleAddPanel() {
             document.getElementById('addPanel').classList.toggle('show');
         }
 
-        // إضافة معلومة لحفظها كمتجه رياضي في Supabase
+        // إضافة معلومة جديدة لجدول Information بالأعمدة الصحيحة (category, title, snippet)
         async function addNewInformation() {
             const category = document.getElementById('infoCategory').value;
             const title = document.getElementById('infoTitle').value.trim();
             const snippet = document.getElementById('infoSnippet').value.trim();
 
             if (!title || !snippet) {
-                alert('يرجى كتابة العنوان والنص.');
+                alert('يرجى ملء خانة العنوان والمعلومة.');
                 return;
             }
 
-            document.getElementById('status').innerText = 'جاري تحويل النص دلالياً إلى متجه رياضي...';
+            // الإضافة إلى جدول Information المكتوب بحرف كبير كما في داتابيز Supabase
+            const { error } = await supabaseClient
+                .from('Information')
+                .insert([{ category, title, snippet }]);
 
-            try {
-                // ندمج العنوان والنص للحصول على تمثيل دلالي كامل للنية
-                const textToVectorize = `${title} ${snippet}`;
-                const vector = await generateVector(textToVectorize);
-
-                const { error } = await supabaseClient
-                    .from('information')
-                    .insert([{ category, title, snippet, embedding: vector }]);
-
-                if (error) {
-                    alert('حدث خطأ أثناء الحفظ: ' + error.message);
-                } else {
-                    alert('تم حفظ المعلومة وتحويلها دلالياً بنجاح!');
-                    document.getElementById('infoTitle').value = '';
-                    document.getElementById('infoSnippet').value = '';
-                    toggleAddPanel();
-                }
-            } catch (err) {
-                alert('خطأ أثناء المعالجة: ' + err.message);
+            if (error) {
+                alert('حدث خطأ أثناء الإضافة: ' + error.message);
+                return;
             }
 
-            document.getElementById('status').innerText = 'المحرك الرياضي جاهز!';
+            alert('تمت إضافة المعلومة إلى My Search بنجاح!');
+            document.getElementById('infoTitle').value = '';
+            document.getElementById('infoSnippet').value = '';
+            toggleAddPanel();
+            performSemanticSearch();
         }
 
-        // البحث الرياضي الدلالي لحساب المسافة والوصول للنية المباشرة
-        async function performVectorSearch() {
-            const query = document.getElementById('searchInput').value.trim();
-            const container = document.getElementById('resultsContainer');
+        let searchTimeout;
+        function debounceSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSemanticSearch();
+            }, 400);
+        }
 
+        // البحث الدلالي بداخل أعمدة Information الصحيحة (category, title, snippet)
+        async function performSemanticSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const container = document.getElementById('resultsContainer');
+            
             if (!query) {
-                container.innerHTML = '<div class="no-result">اكتب نيتك في مربع البحث...</div>';
+                container.innerHTML = '<div class="no-result">الرجاء إدخال نص للبحث.</div>';
                 return;
             }
 
-            container.innerHTML = '<div class="no-result">جاري تحليل النية دلالياً ومطابقة المتجهات...</div>';
+            container.innerHTML = '<div class="no-result">جاري البحث في قاعدة البيانات...</div>';
 
-            try {
-                // 1. تحويل نص البحث إلى متجه
-                const queryVector = await generateVector(query);
+            const { data: informationTable, error } = await supabaseClient
+                .from('Information')
+                .select('*');
 
-                // 2. مطابقة المتجه مع قاعدة البيانات وإرجاع المعلومة الفائزة فقط
-                const { data, error } = await supabaseClient
-                    .rpc('search_vector_information', {
-                        query_embedding: queryVector,
-                        match_threshold: 0.15, // حد القبول الدلالي
-                        match_count: 1          // إرجاع المعلومة الفائزة الوحيدة المقابلة للنية
-                    });
-
-                if (error) {
-                    container.innerHTML = `<div class="no-result">خطأ في استعلام البيانات: ${error.message}</div>`;
-                    return;
-                }
-
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<div class="no-result">لم نجد معلومة مطابقة لنيتك في قاعدة البيانات.</div>';
-                    return;
-                }
-
-                // عرض النتيجة
-                const match = data[0];
-                container.innerHTML = `
-                    <div class="result-item">
-                        <span class="result-tag">${match.category || 'عامة'}</span>
-                        <strong class="result-title">${match.title}</strong>
-                        <p>${match.snippet}</p>
-                    </div>
-                `;
-            } catch (err) {
-                container.innerHTML = `<div class="no-result">خطأ غير متوقع: ${err.message}</div>`;
+            if (error) {
+                container.innerHTML = '<div class="no-result">خطأ في الاتصال بقاعدة البيانات: تأكد من صحة المفتاح والرابط.</div>';
+                return;
             }
+
+            if (!informationTable || informationTable.length === 0) {
+                container.innerHTML = '<div class="no-result">جدول المعلومات فارغ حالياً.</div>';
+                return;
+            }
+
+            const queryWords = query.split(/\s+/).filter(w => w.length > 0);
+
+            const scoredResults = informationTable.map(item => {
+                let score = 0;
+                const tText = (item.title || '').toLowerCase();
+                const sText = (item.snippet || '').toLowerCase();
+                const cText = (item.category || '').toLowerCase();
+
+                queryWords.forEach(word => {
+                    if (tText.includes(word)) score += 10; // تطابق في العنوان
+                    if (sText.includes(word)) score += 3;  // تطابق في المحتوى
+                    if (cText.includes(word)) score += 5;  // تطابق في التصنيف
+                });
+
+                return { item, score };
+            }).filter(res => res.score > 0);
+
+            scoredResults.sort((a, b) => b.score - a.score);
+            const topResults = scoredResults.slice(0, 30);
+
+            container.innerHTML = '';
+            if (topResults.length === 0) {
+                container.innerHTML = '<div class="no-result">لا توجد نتائج مطابقة دلالياً.</div>';
+                return;
+            }
+
+            topResults.forEach(res => {
+                const item = res.item;
+                const div = document.createElement('div');
+                div.className = 'result-item';
+                div.innerHTML = `
+                    <span class="result-tag">${item.category || 'عامة'}</span>
+                    <strong class="result-title">${item.title}</strong>
+                    <p>${item.snippet}</p>
+                `;
+                container.appendChild(div);
+            });
         }
     </script>
 </body>
