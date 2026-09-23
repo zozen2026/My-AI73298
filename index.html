@@ -332,7 +332,6 @@
             try {
                 const queryVector = await generateVector(query);
 
-                // استدعاء الدالة باسمها الجديد search_my_vector لتجاوز الـ Schema Cache
                 const { data, error } = await supabaseClient
                     .rpc('search_my_vector', {
                         match_count: 1,
