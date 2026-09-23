@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Search - المحرك الدلالي الذكي</title>
+    <title>My Search - المحرك الذكي</title>
 
-    <!-- مكتبة Supabase -->
+    <!-- مكتبة المحرك -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- مكتبة تحويل النصوص إلى متجهات رياضية -->
+    <!-- مكتبة معالجة النصوص -->
     <script type="module">
         import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.6.0';
         env.allowLocalModels = false;
@@ -219,13 +219,13 @@
 </head>
 <body>
 
-    <h1>My Search - المحرك الدلالي الذكي</h1>
-    <div class="status-bar" id="status">جاري تهيئة المحرك الرياضي...</div>
+    <h1>My Search - المحرك الذكي</h1>
+    <div class="status-bar" id="status">جاري تهيئة النظام...</div>
 
     <button class="toggle-add-btn" onclick="toggleAddPanel()">➕ إضافة معلومة جديدة</button>
 
     <div class="add-info-panel" id="addPanel">
-        <h3>إضافة معلومة وتحويلها دلالياً إلى متجه رياضي</h3>
+        <h3>إضافة معلومة جديدة إلى المحرك</h3>
         <div class="form-group">
             <label>التصنيف:</label>
             <select id="infoCategory">
@@ -239,23 +239,23 @@
             </select>
         </div>
         <div class="form-group">
-            <label>العنوان / السؤال الاصلي:</label>
+            <label>العنوان / السؤال الأصلي:</label>
             <input type="text" id="infoTitle" placeholder="مثال: حكم الخمر في الإسلام">
         </div>
         <div class="form-group">
             <label>المعلومة / التفاصيل:</label>
             <textarea id="infoSnippet" placeholder="اكتب التفاصيل الكاملة هنا..."></textarea>
         </div>
-        <button class="submit-info-btn" onclick="addNewInformation()">حفظ وتحويل دلالي</button>
+        <button class="submit-info-btn" onclick="addNewInformation()">حفظ المعلومة</button>
     </div>
 
     <div class="search-box-container">
-        <input type="text" id="searchInput" placeholder="ابحث على النية (بأي صياغة، خطأ إملائي، أو جملة طويلة/قصيرة)...">
-        <button onclick="performVectorSearch()">بحث دلالي</button>
+        <input type="text" id="searchInput" placeholder="ابحث عن أي سؤال أو معلومة تريدها...">
+        <button onclick="performVectorSearch()">بحث</button>
     </div>
 
     <div class="results-container" id="resultsContainer">
-        <div class="no-result">اكتب نيتك في مربع البحث لجلب المعلومة المطلوبة...</div>
+        <div class="no-result">اكتب سؤالك أو ما تبحث عنه لجلب المعلومة المناسبة...</div>
     </div>
 
     <script>
@@ -273,9 +273,9 @@
         window.addEventListener('load', async () => {
             try {
                 await window.getEmbeddingPipeline();
-                document.getElementById('status').innerText = 'المحرك الرياضي جاهز لاستقبال البحث والإضافة!';
+                document.getElementById('status').innerText = 'المحرك جاهز واستجابة البحث نشطة!';
             } catch (err) {
-                document.getElementById('status').innerText = 'حدث خطأ في تحميل نموذج المتجهات: ' + err.message;
+                document.getElementById('status').innerText = 'حدث خطأ أثناء الاتصال بالنظام: ' + err.message;
             }
         });
 
@@ -293,7 +293,7 @@
                 return;
             }
 
-            document.getElementById('status').innerText = 'جاري تحويل النص دلالياً إلى متجه رياضي...';
+            document.getElementById('status').innerText = 'جاري معالجة وحفظ البيانات...';
 
             try {
                 const textToVectorize = `${title} ${snippet}`;
@@ -306,7 +306,7 @@
                 if (error) {
                     alert('حدث خطأ أثناء الحفظ: ' + error.message);
                 } else {
-                    alert('تم حفظ المعلومة وتحويلها دلالياً بنجاح!');
+                    alert('تم حفظ المعلومة بنجاح!');
                     document.getElementById('infoTitle').value = '';
                     document.getElementById('infoSnippet').value = '';
                     toggleAddPanel();
@@ -315,7 +315,7 @@
                 alert('خطأ أثناء المعالجة: ' + err.message);
             }
 
-            document.getElementById('status').innerText = 'المحرك الرياضي جاهز!';
+            document.getElementById('status').innerText = 'المحرك جاهز!';
         }
 
         async function performVectorSearch() {
@@ -323,11 +323,11 @@
             const container = document.getElementById('resultsContainer');
 
             if (!query) {
-                container.innerHTML = '<div class="no-result">اكتب نيتك في مربع البحث...</div>';
+                container.innerHTML = '<div class="no-result">اكتب سؤالك أو ما تبحث عنه...</div>';
                 return;
             }
 
-            container.innerHTML = '<div class="no-result">جاري تحليل النية دلالياً ومطابقة المتجهات...</div>';
+            container.innerHTML = '<div class="no-result">جاري البحث عن النتيجة الأنسب...</div>';
 
             try {
                 const queryVector = await generateVector(query);
@@ -340,12 +340,12 @@
                     });
 
                 if (error) {
-                    container.innerHTML = `<div class="no-result">خطأ في استعلام البيانات: ${error.message}</div>`;
+                    container.innerHTML = `<div class="no-result">حدث خطأ أثناء البحث: ${error.message}</div>`;
                     return;
                 }
 
                 if (!data || data.length === 0) {
-                    container.innerHTML = '<div class="no-result">لم نجد معلومة مطابقة لنيتك في قاعدة البيانات.</div>';
+                    container.innerHTML = '<div class="no-result">لم نجد معلومة مطابقة لمضمون بحثك.</div>';
                     return;
                 }
 
@@ -358,7 +358,7 @@
                     </div>
                 `;
             } catch (err) {
-                container.innerHTML = `<div class="no-result">خطأ غير متوقع: ${err.message}</div>`;
+                container.innerHTML = `<div class="no-result">حدث خطأ غير متوقع: ${err.message}</div>`;
             }
         }
     </script>
