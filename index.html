@@ -56,7 +56,7 @@
     <button class="toggle-add-btn" onclick="toggleAddPanel()">➕ إضافة معلومة لموقع My Search</button>
 
     <div class="add-info-panel" id="addPanel">
-        <h3>إضافة معلومة جديدة إلى جدول Information</h3>
+        <h3>إضافة معلومة جديدة إلى جدول information</h3>
         <div class="form-group">
             <label>التصنيف (category):</label>
             <select id="infoCategory">
@@ -99,7 +99,6 @@
             document.getElementById('addPanel').classList.toggle('show');
         }
 
-        // إضافة معلومة جديدة لجدول Information بالأعمدة الصحيحة (category, title, snippet)
         async function addNewInformation() {
             const category = document.getElementById('infoCategory').value;
             const title = document.getElementById('infoTitle').value.trim();
@@ -110,9 +109,8 @@
                 return;
             }
 
-            // الإضافة إلى جدول Information المكتوب بحرف كبير كما في داتابيز Supabase
             const { error } = await supabaseClient
-                .from('Information')
+                .from('information')
                 .insert([{ category, title, snippet }]);
 
             if (error) {
@@ -135,7 +133,6 @@
             }, 400);
         }
 
-        // البحث الدلالي بداخل أعمدة Information الصحيحة (category, title, snippet)
         async function performSemanticSearch() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const container = document.getElementById('resultsContainer');
@@ -148,11 +145,11 @@
             container.innerHTML = '<div class="no-result">جاري البحث في قاعدة البيانات...</div>';
 
             const { data: informationTable, error } = await supabaseClient
-                .from('Information')
+                .from('information')
                 .select('*');
 
             if (error) {
-                container.innerHTML = '<div class="no-result">خطأ في الاتصال بقاعدة البيانات: تأكد من صحة المفتاح والرابط.</div>';
+                container.innerHTML = '<div class="no-result">خطأ في الاتصال بقاعدة البيانات: ' + error.message + '</div>';
                 return;
             }
 
@@ -170,9 +167,9 @@
                 const cText = (item.category || '').toLowerCase();
 
                 queryWords.forEach(word => {
-                    if (tText.includes(word)) score += 10; // تطابق في العنوان
-                    if (sText.includes(word)) score += 3;  // تطابق في المحتوى
-                    if (cText.includes(word)) score += 5;  // تطابق في التصنيف
+                    if (tText.includes(word)) score += 10;
+                    if (sText.includes(word)) score += 3;
+                    if (cText.includes(word)) score += 5;
                 });
 
                 return { item, score };
