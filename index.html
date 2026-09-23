@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Search - المحرك الدلالي الذكي (Vector Engine)</title>
+    <title>My Search - المحرك الدلالي الذكي</title>
 
     <!-- مكتبة Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -240,7 +240,7 @@
         </div>
         <div class="form-group">
             <label>العنوان / السؤال الاصلي:</label>
-            <input type="text" id="infoTitle" placeholder="مثال: كيفية زراعة الطماطم">
+            <input type="text" id="infoTitle" placeholder="مثال: حكم الخمر في الإسلام">
         </div>
         <div class="form-group">
             <label>المعلومة / التفاصيل:</label>
@@ -300,7 +300,7 @@
                 const vector = await generateVector(textToVectorize);
 
                 const { error } = await supabaseClient
-                    .from('information')
+                    .from('infor_my_search')
                     .insert([{ category, title, snippet, embedding: vector }]);
 
                 if (error) {
@@ -332,8 +332,9 @@
             try {
                 const queryVector = await generateVector(query);
 
+                // استدعاء الدالة باسمها الجديد search_my_vector لتجاوز الـ Schema Cache
                 const { data, error } = await supabaseClient
-                    .rpc('search_vector_information', {
+                    .rpc('search_my_vector', {
                         match_count: 1,
                         match_threshold: 0.15,
                         query_embedding: queryVector
