@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Search - المحرك الدلالي مع Supabase</title>
+    <title>My Search - المحرك الدلالي مع </title>
     <!-- مكتبة Supabase للاتصال بقاعدة البيانات -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -56,7 +56,7 @@
     <button class="toggle-add-btn" onclick="toggleAddPanel()">➕ إضافة معلومة لموقع My Search</button>
 
     <div class="add-info-panel" id="addPanel">
-        <h3>إضافة معلومة جديدة إلى جدول Supabase</h3>
+        <h3>إضافة معلومة جديدة إلى جدول </h3>
         <div class="form-group">
             <label>صفة السؤال (التصنيف):</label>
             <select id="infoCategory">
@@ -76,11 +76,11 @@
             <label>المعلومة (إجابة على السؤال):</label>
             <textarea id="infoAnswer" placeholder="اكتب التفاصيل هنا..."></textarea>
         </div>
-        <button class="submit-info-btn" onclick="addNewInformation()">حفظ في Supabase</button>
+        <button class="submit-info-btn" onclick="addNewInformation()">حفظ في My Search</button>
     </div>
 
     <div class="search-box-container">
-        <input type="text" id="searchInput" placeholder="ابحث دلالياً في جدول information..." oninput="debounceSearch()">
+        <input type="text" id="searchInput" placeholder="Search" oninput="debounceSearch()">
         <button onclick="performSemanticSearch()">بحث</button>
     </div>
 
