@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Search - المحرك الذكي</title>
+    <title>My Search</title>
 
-    <!-- مكتبة المحرك -->
+    <!-- مكتبة Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- مكتبة معالجة النصوص -->
+    <!-- مكتبة المعالجة اللغوية متعددة اللغات -->
     <script type="module">
         import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.6.0';
         env.allowLocalModels = false;
         
         window.getEmbeddingPipeline = async () => {
             if (!window.extractor) {
-                window.extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+                // نموذج يدعم العربية والروسية ولغات أوروبا والأمريكتين
+                window.extractor = await pipeline('feature-extraction', 'Xenova/paraphrase-multilingual-MiniLM-L12-v2');
             }
             return window.extractor;
         };
@@ -36,7 +37,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
@@ -219,8 +220,8 @@
 </head>
 <body>
 
-    <h1>My Search - المحرك الذكي</h1>
-    <div class="status-bar" id="status">جاري تهيئة النظام...</div>
+    <h1>My Search</h1>
+    <div class="status-bar" id="status">جاري تحضير المحرك متعدد اللغات...</div>
 
     <button class="toggle-add-btn" onclick="toggleAddPanel()">➕ إضافة معلومة جديدة</button>
 
@@ -240,7 +241,7 @@
         </div>
         <div class="form-group">
             <label>العنوان / السؤال الأصلي:</label>
-            <input type="text" id="infoTitle" placeholder="مثال: حكم الخمر في الإسلام">
+            <input type="text" id="infoTitle" placeholder="مثال: كيف ازرع الموز؟">
         </div>
         <div class="form-group">
             <label>المعلومة / التفاصيل:</label>
@@ -273,9 +274,9 @@
         window.addEventListener('load', async () => {
             try {
                 await window.getEmbeddingPipeline();
-                document.getElementById('status').innerText = 'المحرك جاهز واستجابة البحث نشطة!';
+                document.getElementById('status').innerText = 'المحرك جاهز لدعم كافة اللغات (العربية، الروسية، واللغات العالمية)!';
             } catch (err) {
-                document.getElementById('status').innerText = 'حدث خطأ أثناء الاتصال بالنظام: ' + err.message;
+                document.getElementById('status').innerText = 'حدث خطأ أثناء تحميل النموذج اللغوي: ' + err.message;
             }
         });
 
@@ -293,7 +294,7 @@
                 return;
             }
 
-            document.getElementById('status').innerText = 'جاري معالجة وحفظ البيانات...';
+            document.getElementById('status').innerText = 'جاري تحليل النص لغوياً وحفظه...';
 
             try {
                 const textToVectorize = `${title} ${snippet}`;
@@ -327,7 +328,7 @@
                 return;
             }
 
-            container.innerHTML = '<div class="no-result">جاري البحث عن النتيجة الأنسب...</div>';
+            container.innerHTML = '<div class="no-result">جاري تحليل النوايا واستخراج النتيجة الأنسب...</div>';
 
             try {
                 const queryVector = await generateVector(query);
@@ -335,7 +336,7 @@
                 const { data, error } = await supabaseClient
                     .rpc('search_my_vector', {
                         match_count: 1,
-                        match_threshold: 0.15,
+                        match_threshold: 0.15, // تم ضبط النسبة لضمان مطابقة مرنة ومناسبة
                         query_embedding: queryVector
                     });
 
