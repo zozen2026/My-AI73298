@@ -259,20 +259,20 @@
     </div>
 
     <script>
-        // 1. الإعدادات والاتصال المباشر
-        const SUPABASE_URL = 'https://lzvtnfdgynwczrkwlwhf.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6dnRuZmRneW53Y3pya3dsd2hmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNDIxMTEsImV4cCI6MjEwNDcxODExMX0.w2hNlJ4SszyMBkUVjr1qiWNTTPxHMHkM9YOFtVP-pVI'; 
+        // ضع هنا بيانات الاتصال الخاصة بـ Supabase
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; 
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; 
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // 2. تحويل النص لمتجه
+        // وظيفة تحويل أي نص إلى متجه رياضي (384 بعد)
         async function generateVector(text) {
             const pipe = await window.getEmbeddingPipeline();
             const output = await pipe(text, { pooling: 'mean', normalize: true });
             return Array.from(output.data);
         }
 
-        // 3. تهيئة الصفحة
+        // تحضير النماذج الدلالية عند فتح الصفحة
         window.addEventListener('load', async () => {
             try {
                 await window.getEmbeddingPipeline();
@@ -286,7 +286,7 @@
             document.getElementById('addPanel').classList.toggle('show');
         }
 
-        // 4. حفظ المعلومة
+        // إضافة معلومة لحفظها كمتجه رياضي في Supabase
         async function addNewInformation() {
             const category = document.getElementById('infoCategory').value;
             const title = document.getElementById('infoTitle').value.trim();
@@ -300,6 +300,7 @@
             document.getElementById('status').innerText = 'جاري تحويل النص دلالياً إلى متجه رياضي...';
 
             try {
+                // ندمج العنوان والنص للحصول على تمثيل دلالي كامل للنية
                 const textToVectorize = `${title} ${snippet}`;
                 const vector = await generateVector(textToVectorize);
 
@@ -322,7 +323,7 @@
             document.getElementById('status').innerText = 'المحرك الرياضي جاهز!';
         }
 
-        // 5. تنفيذ البحث
+        // البحث الرياضي الدلالي لحساب المسافة والوصول للنية المباشرة
         async function performVectorSearch() {
             const query = document.getElementById('searchInput').value.trim();
             const container = document.getElementById('resultsContainer');
@@ -335,14 +336,15 @@
             container.innerHTML = '<div class="no-result">جاري تحليل النية دلالياً ومطابقة المتجهات...</div>';
 
             try {
+                // 1. تحويل نص البحث إلى متجه
                 const queryVector = await generateVector(query);
 
-                // إرسال البيانات بالترتيب الأبجدي المطابق تماماً للدالة الجديدة
+                // 2. مطابقة المتجه مع قاعدة البيانات وإرجاع المعلومة الفائزة فقط
                 const { data, error } = await supabaseClient
                     .rpc('search_vector_information', {
-                        match_count: 1,
-                        match_threshold: 0.15,
-                        query_embedding: queryVector
+                        query_embedding: queryVector,
+                        match_threshold: 0.15, // حد القبول الدلالي
+                        match_count: 1          // إرجاع المعلومة الفائزة الوحيدة المقابلة للنية
                     });
 
                 if (error) {
@@ -355,6 +357,7 @@
                     return;
                 }
 
+                // عرض النتيجة
                 const match = data[0];
                 container.innerHTML = `
                     <div class="result-item">
