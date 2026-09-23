@@ -234,6 +234,7 @@
                 <option value="صناعة">صناعة</option>
                 <option value="تكنولوجيا">تكنولوجيا</option>
                 <option value="علوم">علوم</option>
+
                 <option value="تاريخ">تاريخ</option>
                 <option value="أحكام شرعية">أحكام شرعية</option>
             </select>
@@ -259,21 +260,20 @@
     </div>
 
     <script>
-        // 1. إعدادات المفاتيح والاتصال المباشر أولاً
+        // 1. الإعدادات والاتصال المباشر
         const SUPABASE_URL = 'https://lzvtnfdgynwczrkwlwhf.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6dnRuZmRneW53Y3pya3dsd2hmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNDIxMTEsImV4cCI6MjEwNDcxODExMX0.w2hNlJ4SszyMBkUVjr1qiWNTTPxHMHkM9YOFtVP-pVI'; 
         
-        // إنشاء عميل Supabase في بداية الكود لتجنب خطأ Initialization Error
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // 2. وظيفة تحويل النص إلى متجه رياضي (384 بُعد)
+        // 2. تحويل النص لمتجه
         async function generateVector(text) {
             const pipe = await window.getEmbeddingPipeline();
             const output = await pipe(text, { pooling: 'mean', normalize: true });
             return Array.from(output.data);
         }
 
-        // 3. تهيئة المحرك عند تحميل الصفحة
+        // 3. تهيئة الصفحة
         window.addEventListener('load', async () => {
             try {
                 await window.getEmbeddingPipeline();
@@ -287,7 +287,7 @@
             document.getElementById('addPanel').classList.toggle('show');
         }
 
-        // 4. حفظ معلومة جديدة
+        // 4. حفظ المعلومة
         async function addNewInformation() {
             const category = document.getElementById('infoCategory').value;
             const title = document.getElementById('infoTitle').value.trim();
@@ -323,7 +323,7 @@
             document.getElementById('status').innerText = 'المحرك الرياضي جاهز!';
         }
 
-        // 5. إجراء البحث دلالياً واستدعاء الدالة
+        // 5. تنفيذ البحث
         async function performVectorSearch() {
             const query = document.getElementById('searchInput').value.trim();
             const container = document.getElementById('resultsContainer');
@@ -338,7 +338,7 @@
             try {
                 const queryVector = await generateVector(query);
 
-                // استدعاء دالة RPC من سوبابيز
+                // استدعاء دالة الـ RPC
                 const { data, error } = await supabaseClient
                     .rpc('search_vector_information', {
                         query_embedding: queryVector,
