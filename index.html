@@ -234,7 +234,6 @@
                 <option value="صناعة">صناعة</option>
                 <option value="تكنولوجيا">تكنولوجيا</option>
                 <option value="علوم">علوم</option>
-
                 <option value="تاريخ">تاريخ</option>
                 <option value="أحكام شرعية">أحكام شرعية</option>
             </select>
@@ -338,12 +337,12 @@
             try {
                 const queryVector = await generateVector(query);
 
-                // استدعاء دالة الـ RPC
+                // إرسال البيانات بالترتيب الأبجدي المطابق تماماً للدالة الجديدة
                 const { data, error } = await supabaseClient
                     .rpc('search_vector_information', {
-                        query_embedding: queryVector,
+                        match_count: 1,
                         match_threshold: 0.15,
-                        match_count: 1
+                        query_embedding: queryVector
                     });
 
                 if (error) {
